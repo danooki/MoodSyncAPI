@@ -4,13 +4,14 @@ import jwt from "jsonwebtoken";
 import { signUpSchema, signInSchema } from "../zod/userSchema.js"; // import Zod schemas
 
 // SIGN IN
-
 const signIn = async (req, res) => {
   const { email, password } = req.body; // Extracts credentials from request
 
+  // 1. Find user
   let user = await User.findOne({ email }).select("+password"); // Finds user in database // updated to let
   if (!user) throw new Error("Invalid Credentials", { cause: 404 });
 
+  // 2. Compare password
   const isMatch = await bcrypt.compare(password, user.password); // will compare the storage password.
   if (!isMatch) throw new Error("Invalid Credentials", { cause: 400 });
 
@@ -66,7 +67,9 @@ const signOut = async (req, res) => {
   };
 
   res.clearCookie("token", cookieOptions);
-  res.status(200).json({ message: "You just logged out. Goodbye!" });
+  res
+    .status(200)
+    .json({ message: "You just logged out from MoodSync. Goodbye!" });
 };
 
 export { signIn, signUp, signOut };
