@@ -51,6 +51,7 @@ const userSchema = new Schema(
       default: false,
     },
   },
+
   {
     timestamps: true,
   }
@@ -62,6 +63,16 @@ userSchema.methods.getPublicProfile = function () {
   delete userObject.password;
   return userObject;
 };
+
+// Schema for dailyScore
+const dailyScoreSchema = new Schema({
+  date: { type: String, required: true }, // ISO date string
+  D: { type: Number, default: 0 },
+  i: { type: Number, default: 0 },
+  S: { type: Number, default: 0 },
+  C: { type: Number, default: 0 },
+  answeredQuestions: [{ type: String }],
+});
 
 const User = model("User", userSchema);
 export default User;

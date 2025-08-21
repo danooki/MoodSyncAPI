@@ -1,7 +1,6 @@
 import User from "../models/UserModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { signUpSchema, signInSchema } from "../zod/userSchema.js"; // import Zod schemas
 
 // SIGN IN
 const signIn = async (req, res) => {

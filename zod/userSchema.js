@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { dailyScoreSchema } from "./dailyScoreSchema.js";
 
 // Preferences sub-schema
 //must be above everything
@@ -19,6 +20,18 @@ export const userSchema = z.object({
   avatar: z.string().optional(),
   currentPartner: z.string().optional(),
   preferences: preferencesSchema.optional(),
+  dailyScore: {
+    // Added Aug. 19
+    type: dailyScoreSchema,
+    default: () => ({
+      date: new Date().toISOString(),
+      D: 0,
+      i: 0,
+      S: 0,
+      C: 0,
+      answeredQuestions: [],
+    }),
+  },
 });
 
 // SIGN UP schema
