@@ -1,16 +1,25 @@
 import jwt from "jsonwebtoken"; // we need this to verify the token.
 
 const verifyToken = (req, res, next) => {
-  const { token } = req.cookies;
+  try {
+    // 1. Get token from cookies
+    // cookie parser middleware must be used before this middleware.
+    const token = req.cookies?.token;
 
-  if (!token) throw new Error("Unauthorized", { cause: 401 }); // if there is no token, it doesnt allow you to continue (posting or any action)
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
 
-  const payload = jwt.verify(token, process.env.JWT_SECRET); // compares the token with the JWT secret one.
-  console.log(payload);
+    // 2. Verification
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-  req.body.author = payload.id;
+    // 3. Attach userId to request
+    req.userId = decoded.id;
 
-  next();
+    next();
+  } catch (err) {
+    res.status(401).json({ error: "Invalid or expired token" });
+  }
 };
 
 export default verifyToken;

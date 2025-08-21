@@ -32,9 +32,14 @@ const signIn = async (req, res) => {
   user = user.toObject(); // converts mongodb object to regular JS object.
   delete user.password; // delete password for the response.
 
-  res.cookie("token", token, cookieOptions);
-  /*   res.json({ message: 'user logged in' }); // No longer necessary, we will now send the user */
-  res.json(user);
+  res
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: isProduction ? true : false,
+      sameSite: isProduction ? "None" : "Lax",
+      maxAge: 12 * 60 * 60 * 1000, // 12 hours
+    })
+    .json(user);
 };
 // not secure on development mode = because localhost doesnt have https.
 

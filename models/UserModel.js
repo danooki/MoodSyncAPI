@@ -2,6 +2,19 @@ import mongoose from "mongoose";
 
 const { Schema, model } = mongoose;
 
+// Schema for dailyScore subdocument
+const dailyScoreSchema = new Schema(
+  {
+    date: { type: Date, required: true }, // use Date for easier comparisons
+    D: { type: Number, default: 0 },
+    i: { type: Number, default: 0 },
+    S: { type: Number, default: 0 },
+    C: { type: Number, default: 0 },
+    answeredQuestions: [{ type: String }], // store questionIds to avoid double-counting
+  },
+  { _id: false } // optional: don't need separate _id for embedded doc
+);
+
 const userSchema = new Schema(
   {
     firstName: {
@@ -46,33 +59,36 @@ const userSchema = new Schema(
         default: "UTC",
       },
     },
-    isEmailVerified: {
-      type: Boolean,
-      default: false,
+    isEmailVerified: { type: Boolean, default: false },
+
+    // Today's score (single embedded doc)
+    dailyScore: {
+      type: dailyScoreSchema,
+      default: () => ({
+        date: new Date(),
+        D: 0,
+        i: 0,
+        S: 0,
+        C: 0,
+        answeredQuestions: [],
+      }),
+    },
+
+    // optional history of past daily scores
+    scoreHistory: {
+      type: [dailyScoreSchema],
+      default: [],
     },
   },
-
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 // Returns user object without sensitive info
 userSchema.methods.getPublicProfile = function () {
-  const userObject = this.toObject();
-  delete userObject.password;
-  return userObject;
+  const userObject = this.toObject(); // This converts the mongoose document to plain JavaScript object.
+  delete userObject.password; // remove password
+  return userObject; // return the modified object
 };
-
-// Schema for dailyScore
-const dailyScoreSchema = new Schema({
-  date: { type: String, required: true }, // ISO date string
-  D: { type: Number, default: 0 },
-  i: { type: Number, default: 0 },
-  S: { type: Number, default: 0 },
-  C: { type: Number, default: 0 },
-  answeredQuestions: [{ type: String }],
-});
 
 const User = model("User", userSchema);
 export default User;
