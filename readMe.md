@@ -12,15 +12,15 @@
 - `npm run dev`: Starts development server, pulling environment variables from `.env` file.
 - `npm start`: Starts production server, pulling environment variables from the system.
 
-## Endpoints for Postman
+# Endpoints for Postman
 
-# Users
+## Users
 
-POST /signup for register
-POST /signin to login
-DEL /signout to log out
+POST /signup for register.
+POST /signin to login.
+DEL /signout to log out.
 
-# Questions after sign in.
+## Questions after sign in.
 
-GET /daily-score
-POST /daily-score/answer
+GET /daily-score see current score of user.
+POST /daily-score/answer answers a "questionId": "q1" with a "choiceId" : "a".
