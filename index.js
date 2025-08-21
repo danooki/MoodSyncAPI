@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errorHandler.js";
 import authRouter from "./routes/authRouter.js";
+import dailyScoreRouter from "./routes/dailyScoreRouter.js";
 
 const app = express();
 const port = process.env.PORT || 4321;
@@ -20,6 +21,9 @@ app.use(cookieParser()); // above the endpoints
 app.use("/auth", authRouter);
 app.use("*splat", (req, res) => res.status(404).json({ error: "Not found" })); // wrong or false routes
 app.use(errorHandler);
+
+// routes for daily score + must be after authRouter and errorHandler
+app.use("/daily-score", dailyScoreRouter);
 
 app.listen(port, () =>
   console.log(`Server listening on http://localhost:${port}`)
