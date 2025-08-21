@@ -19,11 +19,11 @@ app.use(express.json());
 app.use(cookieParser()); // above the endpoints
 
 app.use("/auth", authRouter);
+app.use("/daily-score", dailyScoreRouter);
+
+// errors + splat route must be after all endpoints
 app.use("*splat", (req, res) => res.status(404).json({ error: "Not found" })); // wrong or false routes
 app.use(errorHandler);
-
-// routes for daily score + must be after authRouter and errorHandler
-app.use("/daily-score", dailyScoreRouter);
 
 app.listen(port, () =>
   console.log(`Server listening on http://localhost:${port}`)

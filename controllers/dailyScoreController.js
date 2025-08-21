@@ -9,7 +9,7 @@ import {
 
 export const getDailyScore = async (req, res, next) => {
   try {
-    const score = await svcGetDailyScore(req.user.id);
+    const score = await svcGetDailyScore(req.userId);
     res.status(200).json({ dailyScore: score });
   } catch (err) {
     next(err);
@@ -19,7 +19,7 @@ export const getDailyScore = async (req, res, next) => {
 export const postAnswer = async (req, res, next) => {
   try {
     const { questionId, choiceId } = req.body;
-    const score = await svcApplyAnswer(req.user.id, questionId, choiceId);
+    const score = await svcApplyAnswer(req.userId, questionId, choiceId);
     res.status(200).json({ dailyScore: score });
   } catch (err) {
     next(err);
@@ -29,7 +29,7 @@ export const postAnswer = async (req, res, next) => {
 export const postBatch = async (req, res, next) => {
   try {
     const { answers } = req.body;
-    const score = await svcApplyBatch(req.user.id, answers);
+    const score = await svcApplyBatch(req.userId, answers);
     res.status(200).json({ dailyScore: score });
   } catch (err) {
     next(err);
