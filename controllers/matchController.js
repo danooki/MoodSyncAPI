@@ -4,7 +4,7 @@ import { compareToday } from "../services/matchService.js";
 
 export const getTodayMatch = async (req, res, next) => {
   try {
-    const result = await compareToday(req.user.id);
+    const result = await compareToday(req.userId);
     res.status(200).json(result);
   } catch (err) {
     next(err);
