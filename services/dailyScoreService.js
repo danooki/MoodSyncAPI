@@ -174,3 +174,39 @@ export async function applyBatch(userId, answers = []) {
   await user.save();
   return user.dailyScore;
 }
+
+/** ─────────────────────────────────────────────────────────────
+ * GET / daily-score/history
+ * returns past daily scores.
+ * ────────────────────────────────────────────────────────────*/
+
+export async function getDailyScoreHistory(userId, { limit } = {}) {
+  const user = await User.findById(userId);
+  if (!user) {
+    const err = new Error("User not found");
+    err.status = 404;
+    throw err;
+  }
+
+  // checks today's score is fresh; if reset happened, it’s now in history.
+  const { reset } = await (async () => {
+    // reuse existing getDailyScore to trigger reset logic
+    await getDailyScore(userId);
+    return { reset: false };
+  })();
+
+  // refetch to get latest history after potential reset.
+  const freshUser = await User.findById(userId).lean();
+  let history = freshUser.scoreHistory || [];
+
+  // sort desc by date.
+  history = history.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  if (limit && Number.isInteger(+limit) && +limit > 0) {
+    history = history.slice(0, +limit);
+  }
+
+  return history;
+}

@@ -5,6 +5,7 @@ import {
   getDailyScore as svcGetDailyScore,
   applyAnswer as svcApplyAnswer,
   applyBatch as svcApplyBatch,
+  getDailyScoreHistory as svcGetHistory,
 } from "../services/dailyScoreService.js";
 
 export const getDailyScore = async (req, res, next) => {
@@ -31,6 +32,17 @@ export const postBatch = async (req, res, next) => {
     const { answers } = req.body;
     const score = await svcApplyBatch(req.userId, answers);
     res.status(200).json({ dailyScore: score });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// this handler returns the history of daily scores
+export const getHistory = async (req, res, next) => {
+  try {
+    const { limit } = req.query;
+    const history = await svcGetHistory(req.user.id, { limit });
+    res.status(200).json({ history });
   } catch (err) {
     next(err);
   }

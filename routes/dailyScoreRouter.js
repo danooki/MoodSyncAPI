@@ -11,6 +11,7 @@ import {
   getDailyScore,
   postAnswer,
   postBatch,
+  getHistory,
 } from "../controllers/dailyScoreController.js";
 
 const router = Router();
@@ -26,5 +27,8 @@ router.post("/answer", validateZod(dailyAnswerSchema), postAnswer);
 
 // POST multiple answers
 router.post("/batch", validateZod(dailyBatchSchema), postBatch);
+
+// GET /daily-score/history for daily scores plural
+router.get("/history", getHistory);
 
 export default router;

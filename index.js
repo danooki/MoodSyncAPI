@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errorHandler.js";
 import authRouter from "./routes/authRouter.js";
 import dailyScoreRouter from "./routes/dailyScoreRouter.js";
+import matchRouter from "./routes/matchRouter.js";
 
 const app = express();
 const port = process.env.PORT || 4321;
@@ -20,6 +21,7 @@ app.use(cookieParser()); // above the endpoints
 
 app.use("/auth", authRouter);
 app.use("/daily-score", dailyScoreRouter);
+app.use("/match", matchRouter);
 
 // errors + splat route must be after all endpoints
 app.use("*splat", (req, res) => res.status(404).json({ error: "Not found" })); // wrong or false routes
