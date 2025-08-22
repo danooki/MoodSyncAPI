@@ -16,11 +16,15 @@
 
 ## Users
 
+```bash
 POST /signup for register.
 POST /signin to login.
 DEL /signout to log out.
+```
 
 ## Questions after sign in.
 
+```bash
 GET /daily-score see current score of user.
 POST /daily-score/answer answers a "questionId": "q1" with a "choiceId" : "a".
+```
