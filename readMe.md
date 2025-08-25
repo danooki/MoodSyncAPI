@@ -61,13 +61,7 @@ Make sure the verifyToken middleware is applied to all protected routes
 
 ```bash
 GET /daily-score see current score of user.
-POST /daily-score/answer answers a "questionId": "q1" with a "choiceId" : "a".
-```
-
-## For testing
-
-```bash
-POST /daily-score/answer provides answer "a" or "b"
+POST /daily-score/answer answers a "questionId": "q1" with a "choiceId" : "a" or "b".
 ```
 
 ## Compare with Partner
