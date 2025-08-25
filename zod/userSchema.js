@@ -14,7 +14,7 @@ const preferencesSchema = z.object({
 });
 
 export const userSchema = z.object({
-  firstName: z.string().min(2),
+  displayName: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(6),
   avatar: z.string().optional(),
@@ -36,7 +36,7 @@ export const userSchema = z.object({
 
 // SIGN UP schema
 export const signUpSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  displayName: z.string().min(2, "First name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   avatar: z.string().optional(),

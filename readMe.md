@@ -22,6 +22,14 @@ POST /signin to login.
 DEL /signout to log out.
 ```
 
+## Circle: create and invite
+
+```bash
+POST /circle create your unique circle.
+GET /circle/my-circle see the circle you belong to.
+POST /circle/:circleId/invite to invite another user by displayName.
+```
+
 ## Questions after sign in.
 
 ```bash

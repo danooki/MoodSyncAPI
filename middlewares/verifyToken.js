@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken"; // we need this to verify the token.
+import jwt from "jsonwebtoken"; // need this to verify the token.
 
 const verifyToken = (req, res, next) => {
   try {
@@ -13,9 +13,13 @@ const verifyToken = (req, res, next) => {
     // 2. Verification
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    // DEBUG: Log the decoded token
+    console.log("DEBUG JWT - decoded:", decoded);
+    console.log("DEBUG JWT - decoded.id:", decoded.id);
+    console.log("DEBUG JWT - decoded.id type:", typeof decoded.id);
+
     // 3. Attach userId to request
     req.userId = decoded.id;
-
     next();
   } catch (err) {
     res.status(401).json({ error: "Invalid or expired token" });
