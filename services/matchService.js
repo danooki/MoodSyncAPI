@@ -77,7 +77,7 @@ function suggestActivities(a, b) {
 
 export async function compareToday(userId) {
   // load user to find partner
-  const user = await User.findById(userId).select("firstName currentPartner");
+  const user = await User.findById(userId).select("displayName currentPartner");
   if (!user) {
     const e = new Error("User not found");
     e.status = 404;
@@ -89,7 +89,9 @@ export async function compareToday(userId) {
     throw e;
   }
 
-  const partner = await User.findById(user.currentPartner).select("firstName");
+  const partner = await User.findById(user.currentPartner).select(
+    "displayName"
+  );
   if (!partner) {
     const e = new Error("Partner not found");
     e.status = 404;
@@ -113,13 +115,13 @@ export async function compareToday(userId) {
   return {
     you: {
       id: user._id,
-      firstName: user.firstName,
+      displayName: user.displayName,
       dailyScore: myScore,
       dominant: mine,
     },
     partner: {
       id: partner._id,
-      firstName: partner.firstName,
+      displayName: partner.displayName,
       dailyScore: partnerScore,
       dominant: theirs,
     },

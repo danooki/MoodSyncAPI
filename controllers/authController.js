@@ -14,7 +14,7 @@ const signIn = async (req, res) => {
   const isMatch = await bcrypt.compare(password, user.password); // will compare the storage password.
   if (!isMatch) throw new Error("Invalid Credentials", { cause: 400 });
 
-  const payload = { id: user._id, firstName: user.firstName }; // Creates JWT with user info (id, name)
+  const payload = { id: user._id, displayName: user.displayName }; // Creates JWT with user info (id, name)
   const jwtSecret = process.env.JWT_SECRET;
   const tokenOptions = { expiresIn: "7d" };
 
@@ -45,7 +45,7 @@ const signIn = async (req, res) => {
 
 // SIGN UP
 const signUp = async (req, res) => {
-  const { firstName, email, password } = req.body; // FIRST deconstruct the user parameters
+  const { displayName, email, password } = req.body; // FIRST deconstruct the user parameters
 
   const userExists = await User.findOne({ email }); // check the user doesnt exist or not repeated
   if (userExists) throw new Error("User already exists", { cause: 400 }); // error if user exists.
@@ -53,7 +53,7 @@ const signUp = async (req, res) => {
   // we need to hash the password, and then pass it to the database.
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = await User.create({
-    firstName,
+    displayName,
     email,
     password: hashedPassword,
   }); // use the information from the body to create the user.

@@ -17,12 +17,17 @@ const dailyScoreSchema = new Schema(
 
 const userSchema = new Schema(
   {
-    firstName: {
+    displayName: {
       type: String,
       required: [true, "Name is required"],
+      unique: true,
       trim: true,
-      minlength: [2, "Name must be at least 2 characters"],
+      minlength: [3, "Name must be at least 3 characters"],
       maxlength: [50, "Name cannot exceed 50 characters"],
+      match: [
+        /^[a-zA-Z0-9_]+$/,
+        "Username can contain letters, numbers, and underscore only",
+      ],
     },
     email: {
       type: String,
