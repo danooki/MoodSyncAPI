@@ -12,6 +12,7 @@ import {
   postAnswer,
   postBatch,
   getHistory,
+  getNextQuestionHandler,
 } from "../controllers/dailyScoreController.js";
 
 const router = Router();
@@ -21,6 +22,9 @@ router.use(verifyToken);
 
 // GET current (auto-resets if > 12h)
 router.get("/", getDailyScore);
+
+// GET next question
+router.get("/next-question", getNextQuestionHandler);
 
 // POST one answer
 router.post("/answer", validateZod(dailyAnswerSchema), postAnswer);
