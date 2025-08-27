@@ -6,7 +6,7 @@ import {
   applyAnswer as svcApplyAnswer,
   applyBatch as svcApplyBatch,
   getDailyScoreHistory as svcGetHistory,
-} from "../services/dailyScoreService.js";
+} from "../services/dailyScore/dailyScoreService.js";
 
 export const getDailyScore = async (req, res, next) => {
   try {

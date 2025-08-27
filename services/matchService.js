@@ -1,6 +1,6 @@
 // this file makes the endpoint for today's match
 import User from "../models/UserModel.js";
-import { getDailyScore } from "./dailyScoreService.js";
+import { getDailyScore } from "./dailyScore/dailyScoreService.js";
 
 // picks the dominant dimension code (e.g., "i"). If tie, return an array of tops.
 // for MVP, it picks the first by a fixed order to keep it simple.
