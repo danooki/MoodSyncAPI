@@ -49,23 +49,6 @@ const userSchema = new Schema(
       default: "",
     },
 
-    // Partnership for MVP (one partner)
-    currentPartner: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-    preferences: {
-      notifications: {
-        dailyReminder: { type: Boolean, default: true },
-        partnerSubmittedAlert: { type: Boolean, default: true },
-      },
-      timezone: {
-        type: String,
-        default: "UTC",
-      },
-    },
-    isEmailVerified: { type: Boolean, default: false },
-
     // Today's score (single embedded doc)
     dailyScore: {
       type: dailyScoreSchema,

@@ -53,7 +53,7 @@ console.log("DEBUG assertOwner - circle found:", {
   return circle;
 }
 
-// Sends an invitation to another user (found by displayName) to join the circle.
+// sends an invitation to another user (found by displayName) to join the circle.
 export async function inviteByDisplayName(circleId, fromUserId, displayName) {
   // The acting user is the circle owner
   const circle = await assertOwner(circleId, fromUserId);
@@ -127,7 +127,7 @@ export async function acceptInvite(inviteId, actingUserId) {
     throw err;
   }
 
-  // Ensure user is not already in another circle
+  // makes sure the invited user is not already in another circle
   const alreadyInCircle = await Circle.findOne({ members: actingUserId });
   if (alreadyInCircle) {
     const err = new Error("User already belongs to another circle");
@@ -172,9 +172,15 @@ export async function declineInvite(inviteId, actingUserId) {
   return { ok: true };
 }
 
-// Lists the circle where the user is a member (at most one).
+// Lists the circle where the user is a member (at least one).
 export async function getMyCircle(userId) {
   return await Circle.findOne({ members: userId }).lean();
+}
+
+// Returns the circleId if the user is in a circle, otherwise null (for Frontend)
+export async function isUserInCircle(userId) {
+  const circle = await Circle.findOne({ members: userId }).select("_id").lean();
+  return circle ? circle._id : null;
 }
 
 // Retrieves details of a circle, but only if the user is a member.
@@ -194,33 +200,4 @@ export async function getCircleForMember(circleId, userId) {
     throw err;
   }
   return circle;
-}
-
-// Lists all pending invitations for the user.
-export async function listMyInvites(userId) {
-  return await CircleInvite.find({ toUser: userId, status: "pending" })
-    .populate("circle", "circleName")
-    .lean();
-}
-
-// Lists all unread notifications for the user.
-export async function listUnreadNotifications(userId) {
-  return await Notification.find({ user: userId, readAt: { $exists: false } })
-    .sort({ createdAt: -1 })
-    .lean();
-}
-
-// Marks a notification as read.
-export async function markNotificationRead(notificationId, userId) {
-  const n = await Notification.findOne({ _id: notificationId, user: userId });
-  if (!n) {
-    const err = new Error("Notification not found");
-    err.status = 404;
-    throw err;
-  }
-  if (!n.readAt) {
-    n.readAt = new Date();
-    await n.save();
-  }
-  return { ok: true };
 }

@@ -1,7 +1,7 @@
 import {
   listUnreadNotifications,
   markNotificationRead,
-} from "../services/circleService.js";
+} from "../services/notificationService.js";
 
 // GET unread notifications for the user
 export async function listUnreadNotificationsController(req, res, next) {

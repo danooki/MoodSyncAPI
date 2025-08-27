@@ -4,8 +4,8 @@ import {
   acceptInvite,
   declineInvite,
   getMyCircle,
-  listMyInvites,
 } from "../services/circleService.js";
+import { listMyInvites } from "../services/notificationService.js";
 
 // POST /circle
 export async function createCircleController(req, res, next) {
@@ -22,7 +22,12 @@ export async function createCircleController(req, res, next) {
 export async function getMyCircleController(req, res, next) {
   try {
     const circle = await getMyCircle(req.userId);
-    res.json(circle);
+    const response = {
+      isInCircle: !!circle,
+      circleId: circle?._id || null,
+      circleName: circle?.circleName || null,
+    };
+    res.json(response);
   } catch (err) {
     next(err);
   }
