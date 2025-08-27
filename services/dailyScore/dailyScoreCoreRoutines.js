@@ -34,3 +34,32 @@ export function mapAnswerToPoints(questionId, choiceId) {
   // choice.points like { D: 1, i: 2 }
   return choice.points || {};
 }
+
+// select the next unanswered question for the user.
+export function selectNextUnansweredQuestion(user, { random = true } = {}) {
+  // questions is expected to be an object keyed by questionId:
+  // { Q1: { text, choices: { A: { label, points }, B: { ... } } }, ... }
+  const allIds = Object.keys(questions || {});
+  const answeredSet = new Set(user.dailyScore?.answeredQuestions || []);
+  const unansweredIds = allIds.filter((id) => !answeredSet.has(id));
+
+  if (unansweredIds.length === 0) return null;
+
+  const chosenId = random
+    ? unansweredIds[Math.floor(Math.random() * unansweredIds.length)]
+    : unansweredIds[0];
+
+  const q = questions[chosenId];
+
+  // map choices to a safe array for the frontend (no points)
+  const choices = Object.entries(q.choices || {}).map(([choiceId, ch]) => ({
+    choiceId,
+    label: ch.label ?? ch.text ?? String(choiceId),
+  }));
+
+  return {
+    questionId: chosenId,
+    text: q.text,
+    choices,
+  };
+}

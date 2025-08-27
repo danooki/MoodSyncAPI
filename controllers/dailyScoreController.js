@@ -6,6 +6,7 @@ import {
   applyAnswer as svcApplyAnswer,
   applyBatch as svcApplyBatch,
   getDailyScoreHistory as svcGetHistory,
+  getNextQuestion,
 } from "../services/dailyScore/dailyScoreService.js";
 
 export const getDailyScore = async (req, res, next) => {
@@ -16,6 +17,24 @@ export const getDailyScore = async (req, res, next) => {
     next(err);
   }
 };
+
+// for GET /daily-score/next-question
+export async function getNextQuestionHandler(req, res, next) {
+  try {
+    // token middleware should attach the authenticated user; adapt to your shape
+    const userId =
+      req.user?.id || req.user?.userId || req.userId || req.user?._id;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    // query param: ?random=false to enforce sequential
+    const random = req.query.random === "false" ? false : true;
+
+    const payload = await dailyScoreService.getNextQuestion(userId, { random });
+    return res.json(payload);
+  } catch (err) {
+    return next(err);
+  }
+}
 
 export const postAnswer = async (req, res, next) => {
   try {

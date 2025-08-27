@@ -4,6 +4,7 @@ import User from "../../models/UserModel.js";
 import {
   ensureDailyScoreCurrent,
   mapAnswerToPoints,
+  selectNextUnansweredQuestion,
 } from "./dailyScoreCoreRoutines.js";
 
 // Public API (called from controllers)
@@ -105,6 +106,25 @@ export async function applyBatch(userId, answers = []) {
 
   await user.save();
   return user.dailyScore;
+}
+
+// ─────────────────────────────────────────────────────────────
+// get one question ready to render on the frontend
+// ────────────────────────────────────────────────────────────
+export async function getNextQuestion(userId, { random = true } = {}) {
+  const user = await User.findById(userId);
+  if (!user) throw httpError("User not found", 404);
+
+  // Ensure user's daily score is fresh (this may push old score to history)
+  const { reset } = await ensureDailyScoreCurrent(user);
+  if (reset) await user.save();
+
+  const question = selectNextUnansweredQuestion(user, { random });
+  if (!question) {
+    return { done: true, message: "All questions answered today" };
+  }
+
+  return question;
 }
 
 // ─────────────────────────────────────────────────────────────

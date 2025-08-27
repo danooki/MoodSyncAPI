@@ -40,6 +40,20 @@ GET /notifications/unread list unread notifications.
 POST /notifications/:notificationId/read marks notification as read.
 ```
 
+## Questions environment
+
+```bash
+GET /daily-score/next-question first or next question trigger point.
+POST /daily-score/answer answers a "questionId": "q1" with a "choiceId" : "a" or "b".
+
+```
+
+## Score after sign in.
+
+```bash
+GET /daily-score see current score of user.
+```
+
 ## Testing invitations order
 
 ```bash
@@ -55,17 +69,4 @@ Verify circles, circleinvites, and notifications collections are updated correct
 
 JWT:
 Make sure the verifyToken middleware is applied to all protected routes
-```
-
-## Questions after sign in.
-
-```bash
-GET /daily-score see current score of user.
-POST /daily-score/answer answers a "questionId": "q1" with a "choiceId" : "a" or "b".
-```
-
-## Compare with Partner
-
-```bash
-GET /match/today compares with partner. If no partner = "No partner linked".
 ```
