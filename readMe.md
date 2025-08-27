@@ -12,9 +12,11 @@
 - `npm run dev`: Starts development server, pulling environment variables from `.env` file.
 - `npm start`: Starts production server, pulling environment variables from the system.
 
-# Endpoints for Postman
+# Endpoints
 
 ## Users
+
+Login / Registration → JWT returned.
 
 ```bash
 POST /signup for register.
@@ -23,6 +25,8 @@ DEL /signout to log out.
 ```
 
 ## Circle: create and invite
+
+Circle Check → user must be in a circle.
 
 ```bash
 POST /circle create your unique circle.
@@ -35,6 +39,8 @@ GET /circle/invites list of pending invites.
 
 ## Notification routes
 
+Owner create a circle → invite another user → check invites → accept/decline → check notifications
+
 ```bash
 GET /notifications/unread list unread notifications.
 POST /notifications/:notificationId/read marks notification as read.
@@ -42,11 +48,23 @@ POST /notifications/:notificationId/read marks notification as read.
 
 ## Questions environment
 
+Start Daily Questions → present 4 random unanswered questions.
+
 ```bash
 GET /daily-score/next-question first or next question trigger point.
 POST /daily-score/answer answers a "questionId": "q1" with a "choiceId" : "a" or "b".
-
 ```
+
+## Tracking Board after answering questions
+
+Show all circle members + status (Pending / Completed).
+
+```bash
+GET /tracking-board for Tracking Board for the current user's circle (owner case).
+GET /tracking-board/:circleId Tracking board for a specific circle (member case).
+```
+
+### Still in production:
 
 ## Score after sign in.
 
@@ -54,19 +72,10 @@ POST /daily-score/answer answers a "questionId": "q1" with a "choiceId" : "a" or
 GET /daily-score see current score of user.
 ```
 
-## Testing invitations order
+## Match Screen
 
-```bash
-Order:
-Create a circle → invite another user → check invites → accept/decline → check notifications
+Shows each partner values to understand each user.
 
-Error cases:
-Invite a user who already has a circle → should return 400
-Accept someone else’s invite → should return 403
+## Proposal Hardcoded
 
-Check MongoDB:
-Verify circles, circleinvites, and notifications collections are updated correctly
-
-JWT:
-Make sure the verifyToken middleware is applied to all protected routes
-```
+System delivers a proposal based on the Match result

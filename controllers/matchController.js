@@ -1,3 +1,4 @@
+// OBSOLETE
 // this file makes the endpoint for today's match
 // it uses the matchService to compare today's mood.
 import { compareToday } from "../services/matchService.js";
