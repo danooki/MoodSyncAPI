@@ -52,7 +52,7 @@ Start Daily Questions → present 4 random unanswered questions.
 
 ```bash
 GET /daily-score/next-question first or next question trigger point.
-POST /daily-score/answer answers a "questionId": "q1" with a "choiceId" : "a" or "b".
+POST /daily-score/answer answers a ´questionId´: ´q1´ with a ´choiceId´ : ´a´ or ´b´.
 ```
 
 ## Tracking Board after answering questions
@@ -60,22 +60,42 @@ POST /daily-score/answer answers a "questionId": "q1" with a "choiceId" : "a" or
 Show all circle members + status (Pending / Completed).
 
 ```bash
-GET /tracking-board for Tracking Board for the current user's circle (owner case).
+GET /tracking-board for Tracking Board for the current user´s circle (owner case).
 GET /tracking-board/:circleId Tracking board for a specific circle (member case).
 ```
 
-### Still in production:
+## Match
 
-## Score after sign in.
+```bash
+GET /match/preview overview of the circle's details before moving to Proposal.
+```
+
+# Still in production:
+
+### Score after sign in.
 
 ```bash
 GET /daily-score see current score of user.
 ```
 
-## Match Screen
+- Shows each partner values to understand each user.
+- Comparison of values between users inside a circle.
 
-Shows each partner values to understand each user.
+### Hard Proposal Screen
 
-## Proposal Hardcoded
+- Text of proposals based on the result from Match.
 
-System delivers a proposal based on the Match result
+### Proposal from AI
+
+- Gemini AI delivers a proposal based on the Match result.
+
+### Dashboard System
+
+- Allows to see historic values before.
+
+### User Settings
+
+- To change password.
+- upload image.
+- remove yourself from a circle and others.
+- ownership of a circle passes to next user.
