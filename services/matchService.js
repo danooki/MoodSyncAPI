@@ -27,9 +27,12 @@ const getMatchPreview = async (userId) => {
   if (!circle) throw new Error("User is not part of a circle");
 
   // 2. check if all members have completed their daily questions
-  const allCompleted = await circleProgressService.checkAllCompleted(
-    circle._id
+  const trackingBoard = await circleProgressService.getTrackingBoardForCircle(
+    circle._id,
+    userId
   );
+  const allCompleted = trackingBoard.allCompleted;
+
   if (!allCompleted) {
     return { allCompleted: false, circleMembers: [] };
   }
