@@ -22,14 +22,15 @@ const port = process.env.PORT || 4321;
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         console.log("Blocked CORS request from:", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true,
+    //     credentials: true,
   })
 );
 
