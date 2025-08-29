@@ -1,6 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import "./config/dbConnection.js";
 import express from "express";
 import cors from "cors";
@@ -16,23 +13,9 @@ import getMatchPreview from "./routes/matchRouter.js";
 import hardProposalRouter from "./routes/hardProposalRouter.js";
 
 const app = express();
-const allowedOrigins = process.env.FRONTEND_URLS?.split(",") || [];
 const port = process.env.PORT || 4321;
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.log("Blocked CORS request from:", origin);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+app.use(cors({ origin: process.env.SPA_ORIGIN, credentials: true }));
 
 app.use(express.json());
 app.use(cookieParser()); // above the endpoints
