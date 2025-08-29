@@ -16,7 +16,7 @@ import getMatchPreview from "./routes/matchRouter.js";
 import hardProposalRouter from "./routes/hardProposalRouter.js";
 
 const app = express();
-const allowedOrigins = process.env.FRONTEND_URLS.split(",");
+const allowedOrigins = process.env.FRONTEND_URLS?.split(",") || [];
 const port = process.env.PORT || 4321;
 
 app.use(
