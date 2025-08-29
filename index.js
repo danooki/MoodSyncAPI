@@ -1,23 +1,34 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import "./config/dbConnection.js";
 import express from "express";
 import cors from "cors";
+
 import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errorHandler.js";
 
 import authRouter from "./routes/authRouter.js";
 import circleRouter from "./routes/circleRouter.js";
-
 import dailyScoreRouter from "./routes/dailyScoreRouter.js";
 import trackingBoardRouter from "./routes/trackingBoardRouter.js";
 import getMatchPreview from "./routes/matchRouter.js";
 import hardProposalRouter from "./routes/hardProposalRouter.js";
 
 const app = express();
+const allowedOrigins = process.env.FRONTEND_URLS.split(",");
 const port = process.env.PORT || 4321;
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_DEV_URL, //allow frontend dev server
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log("Blocked CORS request from:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
