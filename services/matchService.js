@@ -3,20 +3,35 @@
 import CircleModel from "../models/CircleModel.js";
 import UserModel from "../models/UserModel.js";
 import * as circleProgressService from "./circleProgressService.js";
+import { getPrimaryAndSecondary } from "../utils/dailyScoreUtils.js";
 
 const matchTexts = {
   goodMatch: {
-    D: "You both enjoy taking initiative",
-    i: "You both bring energy and enthusiasm",
-    S: "You both value serenity and stability",
-    C: "You both appreciate structure and accuracy",
+    D: "You both love taking charge and leading with confidence!",
+    i: "You both bring amazing energy and enthusiasm to everything!",
+    S: "You both value peace, harmony, and creating calm spaces.",
+    C: "You both appreciate precision, order, and doing things right!",
+  },
+  goodMatchSingle: {
+    D: "You love taking charge and leading with confidence!",
+    i: "You bring amazing energy and enthusiasm to everything!",
+    S: "You value peace, harmony, and creating calm spaces.",
+    C: "You appreciate precision, order, and doing things right!",
   },
   negotiateMatch: {
-    D: "Looking for challenge and leadership",
-    i: "Looking for fun and social connection",
-    S: "Looking for calm and harmony",
-    C: "Looking for precision and order",
+    D: "Looking for action, challenges, and leadership opportunities.",
+    i: "Looking for fun, social vibes, and exciting connections.",
+    S: "Looking for calm, comfort, and peaceful activities.",
+    C: "Looking for structure, accuracy, and well-planned activities.",
   },
+};
+
+// Personality attributes for each DISC trait
+const personalityAttributes = {
+  D: ["Strong-Willed", "Firm", "Decisive"],
+  i: ["Enthusiastic", "Optimistic", "Sociable"],
+  S: ["Patient", "Reliable", "Harmonious"],
+  C: ["Analytical", "Precise", "Organized"],
 };
 
 const getMatchPreview = async (userId) => {
@@ -42,12 +57,33 @@ const getMatchPreview = async (userId) => {
     circle.members.map(async (member) => {
       const user = await UserModel.findById(member._id);
 
+      // Check if user has dailyScore
+      if (!user.dailyScore) {
+        console.warn(
+          `User ${user._id} (${user.displayName}) missing dailyScore`
+        );
+        return {
+          _id: user._id.toString(),
+          displayName: user.displayName,
+          avatar: user.avatar,
+          primaryScore: null,
+          secondaryScore: null,
+          interestText: "",
+          lookingForText: "",
+        };
+      }
+
+      // Compute primary and secondary scores from raw DISC scores
+      const { primary, secondary } = getPrimaryAndSecondary(user.dailyScore);
+
       return {
         _id: user._id.toString(),
         displayName: user.displayName,
         avatar: user.avatar,
-        primaryScore: user.dailyScore.primary,
-        secondaryScore: user.dailyScore.secondary,
+        primaryScore: primary,
+        secondaryScore: secondary,
+        // Add personality attributes based on primary trait
+        attributes: primary ? personalityAttributes[primary] : [],
         // Texts will be computed later
         interestText: "",
         lookingForText: "",
@@ -55,15 +91,63 @@ const getMatchPreview = async (userId) => {
     })
   );
 
-  // 4. Compute match type and generate texts for each member
+  // 4. Check if this is a single-person circle
+  const isSinglePersonCircle = circleMembers.length === 1;
+
+  // 5. Compute match type and generate texts for each member
   // We compare each member with the current user
   const currentUser = circleMembers.find((m) => m._id === userId);
+
+  // Check if current user has valid primary score
+  if (!currentUser || !currentUser.primaryScore) {
+    console.error(`Current user ${userId} missing primary score`);
+    return {
+      allCompleted: false,
+      circleMembers: [],
+      error: "Current user missing daily score data",
+    };
+  }
+
   const currentPrimary = currentUser.primaryScore;
 
-  circleMembers.forEach((member) => {
-    if (member._id === userId) return; // skip self
+  // If single person circle, give them their own insight
+  if (isSinglePersonCircle) {
+    currentUser.matchType = "goodMatch";
+    currentUser.interestText = matchTexts.goodMatchSingle[currentPrimary];
+    return {
+      allCompleted,
+      circleMembers,
+      isSinglePersonCircle: true,
+    };
+  }
 
-    // Check if primary scores match
+  // For multi-person circles, process all members including current user
+  circleMembers.forEach((member) => {
+    // Skip members without valid primary scores
+    if (!member.primaryScore) {
+      console.warn(
+        `Skipping member ${member._id} (${member.displayName}) - no primary score`
+      );
+      return;
+    }
+
+    if (member._id === userId) {
+      // Current user - check if they have any good matches
+      const hasGoodMatch = circleMembers.some(
+        (m) => m._id !== userId && m.primaryScore === currentPrimary
+      );
+
+      if (hasGoodMatch) {
+        member.matchType = "goodMatch";
+        member.interestText = matchTexts.goodMatch[currentPrimary];
+      } else {
+        member.matchType = "negotiateMatch";
+        member.lookingForText = matchTexts.negotiateMatch[currentPrimary];
+      }
+      return;
+    }
+
+    // Other members - check if primary scores match with current user
     if (member.primaryScore === currentPrimary) {
       // Good match → both get same interest text
       member.matchType = "goodMatch";
@@ -72,13 +156,13 @@ const getMatchPreview = async (userId) => {
       // Negotiate match → each gets their own lookingForText
       member.matchType = "negotiateMatch";
       member.lookingForText = matchTexts.negotiateMatch[member.primaryScore];
-      currentUser.lookingForText = matchTexts.negotiateMatch[currentPrimary];
     }
   });
 
   return {
     allCompleted,
     circleMembers,
+    isSinglePersonCircle: false,
   };
 };
 
@@ -94,20 +178,23 @@ export default { getMatchPreview };
       "avatar": "url_to_avatar",
       "primaryScore": "D",
       "secondaryScore": "i",
+      "attributes": ["Strong-Willed", "Firm", "Decisive"],
       "matchType": "goodMatch",
-      "interestText": "You both enjoy taking initiative",
-      "lookingForText": null
+      "interestText": "You both love taking charge and leading with confidence!",
+      "lookingForText": ""
     },
     {
       "displayName": "Bob",
       "avatar": "url_to_avatar",
       "primaryScore": "C",
       "secondaryScore": "S",
+      "attributes": ["Analytical", "Precise", "Organized"],
       "matchType": "negotiateMatch",
-      "interestText": null,
-      "lookingForText": "Looking for creativity"
+      "interestText": "",
+      "lookingForText": "Looking for structure, accuracy, and well-planned activities."
     }
-  ]
+  ],
+  "isSinglePersonCircle": false
 }
   */
 // ─────────────────────────────────────────────────────────────
