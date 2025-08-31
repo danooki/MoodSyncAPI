@@ -8,21 +8,15 @@
 - `JWT_SECRET=` for the cookies.
 - `SPA_ORIGIN=` for CORS (frontend URL).
 
-### Environment Variables Example:
+### Environment Variables Examples:
 
 ```bash
-# Database Configuration
-MONGO_URI=mongodb://localhost:27017/moodsync
-# For production: MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/moodsync
+MONGO_URI=the.connection.string.from.mongoDB
 
-# JWT Configuration
 JWT_SECRET=your-super-secret-jwt-key-here
 
-# Frontend Origins (for CORS)
-# For localhost development
-SPA_ORIGIN=http://localhost:3000
-# For production deployment
-# SPA_ORIGIN=https://your-deployed-frontend.com
+#For production deployment
+SPA_ORIGIN=https://your-deployed-frontend.com
 
 # Server Configuration
 PORT=4321
