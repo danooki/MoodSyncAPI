@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errorHandler.js";
 
 import authRouter from "./routes/authRouter.js";
+import userRouter from "./routes/userRouter.js";
 import circleRouter from "./routes/circleRouter.js";
 import dailyScoreRouter from "./routes/dailyScoreRouter.js";
 import trackingBoardRouter from "./routes/trackingBoardRouter.js";
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(cookieParser()); // above the endpoints
 
 app.use("/auth", authRouter);
+app.use("/user", userRouter);
 app.use("/circle", circleRouter);
 app.use("/daily-score", dailyScoreRouter);
 app.use("/tracking-board", trackingBoardRouter);

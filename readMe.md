@@ -4,8 +4,30 @@
 
 - `npm i` to install dependencies.
 - create a `.env` file with variables:
-- MONGO_URI= for the collection.
-- JWT_SECRET= for the cookies.
+- `MONGO_URI=` for the collection.
+- `JWT_SECRET=` for the cookies.
+- `SPA_ORIGIN=` for CORS (frontend URL).
+
+### Environment Variables Example:
+
+```bash
+# Database Configuration
+MONGO_URI=mongodb://localhost:27017/moodsync
+# For production: MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/moodsync
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-here
+
+# Frontend Origins (for CORS)
+# For localhost development
+SPA_ORIGIN=http://localhost:3000
+# For production deployment
+# SPA_ORIGIN=https://your-deployed-frontend.com
+
+# Server Configuration
+PORT=4321
+NODE_ENV=development
+```
 
 ## Terminal Commands
 
@@ -14,14 +36,20 @@
 
 # Endpoints
 
-## Users
+## Authentication
 
 Login / Registration → JWT returned.
 
 ```bash
-POST /signup for register.
-POST /signin to login.
-DEL /signout to log out.
+POST /auth/signup for register.
+POST /auth/signin to login.
+DEL /auth/signout to log out.
+```
+
+## User's view:
+
+```bash
+GET /user/me view complete information of user.
 ```
 
 ## Circle: create and invite

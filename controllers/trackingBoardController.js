@@ -6,7 +6,7 @@ import * as circleProgressService from "../services/circleProgressService.js";
 
 export async function getMyTrackingBoard(req, res, next) {
   try {
-    const userId = req.user?.id || req.user?._id || req.user?.userId;
+    const userId = req.userId;
     if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
     const board = await circleProgressService.getTrackingBoardForUser(userId);
@@ -21,7 +21,7 @@ export async function getMyTrackingBoard(req, res, next) {
 // ────────────────────────────────────────────────────────────
 export async function getCircleTrackingBoard(req, res, next) {
   try {
-    const userId = req.user?.id || req.user?._id || req.user?.userId;
+    const userId = req.userId;
     if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
     const { circleId } = req.params;
