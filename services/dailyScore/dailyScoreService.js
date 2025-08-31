@@ -10,7 +10,11 @@ import {
 // Public API (called from controllers)
 export async function getDailyScore(userId) {
   const user = await User.findById(userId);
-  if (!user) throw httpError("User not found", 404);
+  if (!user) {
+    const err = new Error("User not found");
+    err.cause = 404;
+    throw err;
+  }
 
   const { reset } = await ensureDailyScoreCurrent(user);
   if (reset) await user.save();
@@ -24,14 +28,20 @@ export async function getDailyScore(userId) {
 // ────────────────────────────────────────────────────────────
 export async function applyAnswer(userId, questionId, choiceId) {
   const user = await User.findById(userId);
-  if (!user) throw httpError("User not found", 404);
+  if (!user) {
+    const err = new Error("User not found");
+    err.cause = 404;
+    throw err;
+  }
 
   await ensureDailyScoreCurrent(user);
 
   const alreadyAnswered =
     user.dailyScore.answeredQuestions?.includes(questionId);
   if (alreadyAnswered) {
-    throw httpError("Question already answered today", 409);
+    const err = new Error("Question already answered today");
+    err.cause = 409;
+    throw err;
   }
 
   const delta = mapAnswerToPoints(questionId, choiceId);
@@ -53,23 +63,33 @@ export async function applyAnswer(userId, questionId, choiceId) {
 // ────────────────────────────────────────────────────────────
 export async function applyBatch(userId, answers = []) {
   if (!Array.isArray(answers) || answers.length === 0) {
-    throw httpError("answers must be a non-empty array", 400);
+    const err = new Error("answers must be a non-empty array");
+    err.cause = 400;
+    throw err;
   }
 
   // de-duplicate incoming questionIds inside the batch
   const seenInBatch = new Set();
   for (const a of answers) {
     if (!a?.questionId || !a?.choiceId) {
-      throw httpError("Each answer needs questionId and choiceId", 400);
+      const err = new Error("Each answer needs questionId and choiceId");
+      err.cause = 400;
+      throw err;
     }
     if (seenInBatch.has(a.questionId)) {
-      throw httpError("Duplicate questionId in batch", 400);
+      const err = new Error("Duplicate questionId in batch");
+      err.cause = 400;
+      throw err;
     }
     seenInBatch.add(a.questionId);
   }
 
   const user = await User.findById(userId);
-  if (!user) throw httpError("User not found", 404);
+  if (!user) {
+    const err = new Error("User not found");
+    err.cause = 404;
+    throw err;
+  }
 
   await ensureDailyScoreCurrent(user);
 
@@ -78,10 +98,11 @@ export async function applyBatch(userId, answers = []) {
     seenInBatch.has(qId)
   );
   if (already.length) {
-    throw httpError(
-      `Some questions already answered today: ${already.join(", ")}`,
-      409
+    const err = new Error(
+      `Some questions already answered today: ${already.join(", ")}`
     );
+    err.cause = 409;
+    throw err;
   }
 
   // accumulate deltas then save once
@@ -113,7 +134,11 @@ export async function applyBatch(userId, answers = []) {
 // ────────────────────────────────────────────────────────────
 export async function getNextQuestion(userId, { random = true } = {}) {
   const user = await User.findById(userId);
-  if (!user) throw httpError("User not found", 404);
+  if (!user) {
+    const err = new Error("User not found");
+    err.cause = 404;
+    throw err;
+  }
 
   // Ensure user's daily score is fresh (this may push old score to history)
   const { reset } = await ensureDailyScoreCurrent(user);
@@ -135,7 +160,7 @@ export async function getDailyScoreHistory(userId, { limit } = {}) {
   const user = await User.findById(userId);
   if (!user) {
     const err = new Error("User not found");
-    err.status = 404;
+    err.cause = 404;
     throw err;
   }
 

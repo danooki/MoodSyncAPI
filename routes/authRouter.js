@@ -9,8 +9,5 @@ const authRouter = Router();
 authRouter.post("/signin", validateZod(signInSchema), signIn);
 authRouter.post("/signup", validateZod(signUpSchema), signUp);
 authRouter.delete("/signout", signOut);
-authRouter.get("/me", verifyToken, (req, res) => {
-  res.json({ message: "Welcome!", user: req.user });
-});
 
 export default authRouter;

@@ -26,10 +26,18 @@ export async function ensureDailyScoreCurrent(user, now = new Date()) {
 // update the user's daily score based on their answers.
 export function mapAnswerToPoints(questionId, choiceId) {
   const q = questions[questionId];
-  if (!q) throw httpError("Unknown questionId", 400);
+  if (!q) {
+    const err = new Error("Unknown questionId");
+    err.cause = 400;
+    throw err;
+  }
 
   const choice = q.choices[choiceId];
-  if (!choice) throw httpError("Unknown choiceId", 400);
+  if (!choice) {
+    const err = new Error("Unknown choiceId");
+    err.cause = 400;
+    throw err;
+  }
 
   // choice.points like { D: 1, i: 2 }
   return choice.points || {};
