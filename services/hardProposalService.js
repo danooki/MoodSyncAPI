@@ -1,6 +1,9 @@
-// this file makes the endpoint for today's match
+// this file makes the endpoint for today's proposals based on circle members
 import User from "../models/UserModel.js";
+import CircleModel from "../models/CircleModel.js";
 import { getDailyScore } from "./dailyScore/dailyScoreService.js";
+import * as circleProgressService from "./circleProgressService.js";
+import { getPrimaryAndSecondary } from "../utils/dailyScoreUtils.js";
 
 // picks the dominant dimension code (e.g., "i"). If tie, return an array of tops.
 // for MVP, it picks the first by a fixed order to keep it simple.
@@ -69,63 +72,164 @@ function suggestActivities(a, b) {
   for (const k of keyOptions) if (ideas[k]) return ideas[k];
 
   // fallback if no specific pair found
-  // example
   return [
-    "Quick check-in about energy/budget, then pick one activity each: 45 min A’s pick, 45 min B’s pick",
+    "Quick check-in about energy/budget, then pick one activity each: 45 min A's pick, 45 min B's pick",
   ];
 }
 
-export async function compareToday(userId) {
-  // load user to find partner
-  const user = await User.findById(userId).select("displayName currentPartner");
-  if (!user) {
-    const e = new Error("User not found");
-    e.status = 404;
-    throw e;
+// Generate group activities based on all circle members' personalities
+function generateGroupActivities(circleMembers) {
+  const memberCount = circleMembers.length;
+  const dominants = circleMembers.map((m) => m.dominant);
+
+  // Count each dominant trait
+  const traitCounts = dominants.reduce((acc, trait) => {
+    acc[trait] = (acc[trait] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Find the most common trait
+  const mostCommonTrait = Object.entries(traitCounts).sort(
+    ([, a], [, b]) => b - a
+  )[0][0];
+
+  // Generate group-specific suggestions
+  const groupSuggestions = {
+    // All same trait
+    unanimous: {
+      D: [
+        "Group challenge or competition: escape room, trivia night, or team sports",
+        "Plan and execute a group project or goal-oriented activity",
+      ],
+      i: [
+        "Social gathering: party, group dinner, or outdoor adventure",
+        "Interactive group activity: karaoke, group games, or social event",
+      ],
+      S: [
+        "Relaxing group activity: movie night, board games, or peaceful outing",
+        "Low-pressure social: potluck dinner, casual hangout, or gentle activities",
+      ],
+      C: [
+        "Structured group activity: museum visit, organized tour, or planned event",
+        "Efficient group task with clear organization and planning",
+      ],
+    },
+    // Mixed traits
+    mixed: [
+      "Rotating activity night: each person picks one activity for 30 minutes",
+      "Compromise activity: find something that accommodates everyone's energy levels",
+      "Split into smaller groups based on similar interests, then reconvene",
+      "Progressive dinner or activity: start calm, build energy, then wind down",
+    ],
+  };
+
+  // Check if all members have the same dominant trait
+  const isUnanimous = Object.values(traitCounts).some(
+    (count) => count === memberCount
+  );
+
+  if (isUnanimous) {
+    return groupSuggestions.unanimous[mostCommonTrait];
+  } else {
+    return groupSuggestions.mixed;
   }
-  if (!user.currentPartner) {
-    const e = new Error("No partner linked");
+}
+
+export async function getCircleProposals(userId) {
+  // 1. fetch the user's circle
+  const circle = await CircleModel.findOne({ members: userId }).populate(
+    "members"
+  );
+  if (!circle) {
+    const e = new Error("User is not part of a circle");
     e.status = 400;
     throw e;
   }
 
-  const partner = await User.findById(user.currentPartner).select(
-    "displayName"
+  // 2. check if all members have completed their daily questions
+  const trackingBoard = await circleProgressService.getTrackingBoardForCircle(
+    circle._id,
+    userId
   );
-  if (!partner) {
-    const e = new Error("Partner not found");
-    e.status = 404;
-    throw e;
+  const allCompleted = trackingBoard.allCompleted;
+
+  if (!allCompleted) {
+    return {
+      allCompleted: false,
+      message: "All circle members must complete daily questions first",
+      circleMembers: [],
+      proposals: [],
+    };
   }
 
-  // makes sure both daily scores are fresh
-  const myScore = await getDailyScore(userId);
-  const partnerScore = await getDailyScore(partner._id);
+  // 3. build array of circle members with their daily scores
+  const circleMembers = await Promise.all(
+    circle.members.map(async (member) => {
+      const user = await User.findById(member._id);
+      const dailyScore = await getDailyScore(user._id);
+      const dominant = dominantDim(dailyScore);
 
-  // determine dominant dimensions
-  const mine = dominantDim(myScore);
-  const theirs = dominantDim(partnerScore);
+      return {
+        id: user._id,
+        displayName: user.displayName,
+        avatar: user.avatar,
+        dailyScore,
+        dominant,
+      };
+    })
+  );
 
-  // alignment heuristic
-  const aligned = mine === theirs;
+  // 4. Generate proposals based on circle size
+  let proposals = [];
 
-  // suggest activities
-  const suggestions = suggestActivities(mine, theirs);
+  if (circleMembers.length === 1) {
+    // Single person circle - self-focused activities
+    const member = circleMembers[0];
+    proposals = [
+      "Self-care day: treat yourself to something you enjoy",
+      "Personal project time: work on something meaningful to you",
+      "Solo adventure: explore a new place or try something new",
+    ];
+  } else if (circleMembers.length === 2) {
+    // Two person circle - use existing pair logic
+    const [member1, member2] = circleMembers;
+    proposals = suggestActivities(member1.dominant, member2.dominant);
+  } else {
+    // Multi-person circle - generate group activities
+    proposals = generateGroupActivities(circleMembers);
+  }
+
+  // 5. Generate pair-wise compatibility insights
+  const pairInsights = [];
+  if (circleMembers.length > 1) {
+    for (let i = 0; i < circleMembers.length; i++) {
+      for (let j = i + 1; j < circleMembers.length; j++) {
+        const member1 = circleMembers[i];
+        const member2 = circleMembers[j];
+        const pairSuggestions = suggestActivities(
+          member1.dominant,
+          member2.dominant
+        );
+
+        pairInsights.push({
+          members: [member1.displayName, member2.displayName],
+          dominantTraits: [member1.dominant, member2.dominant],
+          aligned: member1.dominant === member2.dominant,
+          suggestions: pairSuggestions,
+        });
+      }
+    }
+  }
 
   return {
-    you: {
-      id: user._id,
-      displayName: user.displayName,
-      dailyScore: myScore,
-      dominant: mine,
+    allCompleted: true,
+    circleMembers,
+    proposals,
+    pairInsights,
+    circleInfo: {
+      id: circle._id,
+      name: circle.circleName,
+      memberCount: circleMembers.length,
     },
-    partner: {
-      id: partner._id,
-      displayName: partner.displayName,
-      dailyScore: partnerScore,
-      dominant: theirs,
-    },
-    aligned,
-    suggestions,
   };
 }
