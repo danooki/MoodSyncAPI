@@ -1,11 +1,9 @@
-// OBSOLETE
-// this file makes the endpoint for today's match
-// it uses the matchService to compare today's mood.
-import { compareToday } from "../services/hardProposalService.js";
+// this file makes the endpoint for today's proposals based on circle members
+import { getCircleProposals } from "../services/hardProposalService.js";
 
-export const getTodayMatch = async (req, res, next) => {
+export const getTodayHardProposals = async (req, res, next) => {
   try {
-    const result = await compareToday(req.userId);
+    const result = await getCircleProposals(req.userId);
     res.status(200).json(result);
   } catch (err) {
     next(err);
