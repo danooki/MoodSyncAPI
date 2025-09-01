@@ -35,15 +35,11 @@ Headers: Authorization: Bearer <token>
 Response:
 - Success (201): 
   {
-    "success": true,
-    "message": "Circle created successfully",
-    "data": {
-      "circle": {
-        "id": "string",
-        "name": "string",
-        "members": ["string", "string"],
-        "owner": "string"
-      }
+    "circle": {
+      "id": "string",
+      "name": "string",
+      "members": ["string", "string"],
+      "owner": "string"
     }
   }
 - Error (400): 
@@ -59,24 +55,18 @@ Response:
   
   ===========================
   
-  GET /my-circle to Get the circle the user belongs to
+  GET /circle/my-circle to Get the circle the user belongs to
   Request Body: None
   Headers: Authorization: Bearer <token>
 
   Response:
   - Success (200):
   {
-    "success": true,
-    "message": "Circle retrieved successfully",
-    "data": {
-      "circle": {
-        "id": "string",
-        "name": "string",
-        "members": ["string", "string"],
-        "owner": "string"
-      }
-    }
+    "isInCircle": "boolean",
+    "circleId": "string",
+    "circleName": "string"
   }
+  
 - Error (401):
   {
     "success": false,
@@ -90,28 +80,24 @@ Response:
 
   ===========================
 
-  POST /:circleId/invite to Invite a user to a circle
+  POST /circle/:circleId/invite to Invite a user to a circle
+  The circleId must be in the url.
   Request Body:
   {
     "displayName": "string"
   }
   Headers: Authorization: Bearer <token>
-  Parameters: circleId (string, required)
 
   Response:
   - Success (201):
   {
-    "success": true,
-    "message": "Invitation sent successfully",
-    "data": {
-      "invite": {
-        "id": "string",
-        "circleId": "string",
-        "senderId": "string", 
-        "senderName": "string",
-        "senderAvatar": "string",
-        "status": "string (pending, accepted, declined)"
-      }
+    "invite": {
+      "inviteId": "string",
+      "circleId": "string",
+      "fromUser": "string", 
+      "toUser": "string",
+      "status": "string (pending, accepted, declined)",
+      "expiresAt": "date"
     }
   }
 - Error (400):
@@ -129,20 +115,24 @@ Response:
     "success": false,
     "message": "Circle not found"
   }
+- Error (403):
+  {
+    "success": false,
+    "message": "User already in circle or already invited"
+  }
 
   ===========================
   
-  POST /invite/:inviteId/accept to Accept an invitation
+  POST /circle/invite/:inviteId/accept to Accept an invitation
+  The inviteId must be in the url.
   Request Body: None
   Headers: Authorization: Bearer <token>
-  Parameters: inviteId (string, required)
   
   
   Response:
   - Success (200):
   {
-    "success": true,
-    "message": "Invitation accepted successfully"
+    "circleId": "string"
   }
 - Error (400):
   {
@@ -167,16 +157,15 @@ Response:
 
   ===========================
 
-  POST /invite/:inviteId/decline to Decline an invitation
+  POST /circle/invite/:inviteId/decline to Decline an invitation
+  The inviteId must be in the url.
   Request Body: None
   Headers: Authorization: Bearer <token>
-  Parameters: inviteId (string, required)
 
   Response:
   - Success (200):
   {
-    "success": true,
-    "message": "Invitation declined successfully"
+      "ok": true
   }
 - Error (400):
   {

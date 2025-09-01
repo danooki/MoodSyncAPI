@@ -23,11 +23,11 @@ Response:
   "allCompleted": boolean,
   "circleMembers": [
     {
-      "_id": "string",
+      "_id": "string", (mongoose id, cant change this name)
       "displayName": "string",
       "avatar": "string",
-      "primaryScore": "string | null", // dailyDominantTrait - resets every 12 hours
-      "secondaryScore": "string | null", // dailySecondaryTrait - resets every 12 hours
+      "dailyDominantTrait": "string | null", // resets every 12 hours
+      "dailySecondaryTrait": "string | null", // resets every 12 hours
       "attributes": ["string"],
       "matchType": "string",
       "interestText": "string",

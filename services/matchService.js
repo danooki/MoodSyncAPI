@@ -65,8 +65,8 @@ const getMatchPreview = async (userId) => {
           _id: user._id.toString(),
           displayName: user.displayName,
           avatar: user.avatar,
-          primaryScore: null,
-          secondaryScore: null,
+          dailyDominantTrait: null,
+          dailySecondaryTrait: null,
           interestText: "",
           lookingForText: "",
         };
@@ -80,8 +80,8 @@ const getMatchPreview = async (userId) => {
         _id: user._id.toString(),
         displayName: user.displayName,
         avatar: user.avatar,
-        primaryScore: primary,
-        secondaryScore: secondary,
+        dailyDominantTrait: primary,
+        dailySecondaryTrait: secondary,
         // Add personality attributes based on primary trait
         attributes: primary ? personalityAttributes[primary] : [],
         // Texts will be computed later
@@ -98,9 +98,9 @@ const getMatchPreview = async (userId) => {
   // We compare each member with the current user
   const currentUser = circleMembers.find((m) => m._id === userId);
 
-  // Check if current user has valid primary score
-  if (!currentUser || !currentUser.primaryScore) {
-    console.error(`Current user ${userId} missing primary score`);
+  // Check if current user has valid daily dominant trait
+  if (!currentUser || !currentUser.dailyDominantTrait) {
+    console.error(`Current user ${userId} missing daily dominant trait`);
     return {
       allCompleted: false,
       circleMembers: [],
@@ -108,7 +108,7 @@ const getMatchPreview = async (userId) => {
     };
   }
 
-  const currentPrimary = currentUser.primaryScore;
+  const currentPrimary = currentUser.dailyDominantTrait;
 
   // If single person circle, give them their own insight
   if (isSinglePersonCircle) {
@@ -123,10 +123,10 @@ const getMatchPreview = async (userId) => {
 
   // For multi-person circles, process all members including current user
   circleMembers.forEach((member) => {
-    // Skip members without valid primary scores
-    if (!member.primaryScore) {
+    // Skip members without valid daily dominant traits
+    if (!member.dailyDominantTrait) {
       console.warn(
-        `Skipping member ${member._id} (${member.displayName}) - no primary score`
+        `Skipping member ${member._id} (${member.displayName}) - no daily dominant trait`
       );
       return;
     }
@@ -134,7 +134,7 @@ const getMatchPreview = async (userId) => {
     if (member._id === userId) {
       // Current user - check the type of match the circle has.
       const hasGoodMatch = circleMembers.some(
-        (m) => m._id !== userId && m.primaryScore === currentPrimary
+        (m) => m._id !== userId && m.dailyDominantTrait === currentPrimary
       );
 
       if (hasGoodMatch) {
@@ -148,14 +148,15 @@ const getMatchPreview = async (userId) => {
     }
 
     // Other members - check if the type of match the circle has.
-    if (member.primaryScore === currentPrimary) {
+    if (member.dailyDominantTrait === currentPrimary) {
       // Good match → both get same interest text
       member.matchType = "goodMatch";
-      member.interestText = matchTexts.goodMatch[member.primaryScore];
+      member.interestText = matchTexts.goodMatch[member.dailyDominantTrait];
     } else {
       // Negotiate match → each gets their own lookingForText
       member.matchType = "negotiateMatch";
-      member.lookingForText = matchTexts.negotiateMatch[member.primaryScore];
+      member.lookingForText =
+        matchTexts.negotiateMatch[member.dailyDominantTrait];
     }
   });
 
