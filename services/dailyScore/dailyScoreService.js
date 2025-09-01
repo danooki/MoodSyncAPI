@@ -6,6 +6,7 @@ import {
   mapAnswerToPoints,
   selectNextUnansweredQuestion,
 } from "./dailyScoreCoreRoutines.js";
+import { getPrimaryAndSecondary } from "../../utils/dailyScoreUtils.js";
 
 // Public API (called from controllers)
 export async function getDailyScore(userId) {
@@ -51,6 +52,10 @@ export async function applyAnswer(userId, questionId, choiceId) {
   user.dailyScore.C += delta.C || 0;
 
   user.dailyScore.answeredQuestions.push(questionId);
+
+  const { primary, secondary } = getPrimaryAndSecondary(user.dailyScore);
+  user.dailyScore.dailyDominantTrait = primary;
+  user.dailyScore.dailySecondaryTrait = secondary;
 
   await user.save();
   return user.dailyScore;
@@ -124,6 +129,11 @@ export async function applyBatch(userId, answers = []) {
   user.dailyScore.i += deltai;
   user.dailyScore.S += deltaS;
   user.dailyScore.C += deltaC;
+
+  // Update dominant traits after batch update
+  const { primary, secondary } = getPrimaryAndSecondary(user.dailyScore);
+  user.dailyScore.dailyDominantTrait = primary;
+  user.dailyScore.dailySecondaryTrait = secondary;
 
   await user.save();
   return user.dailyScore;

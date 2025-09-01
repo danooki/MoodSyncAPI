@@ -8,4 +8,6 @@ export const dailyScoreSchema = z.object({
   S: z.number().min(0),
   C: z.number().min(0),
   answeredQuestions: z.array(z.string()).optional(), // IDs of questions answered today
+  dailyDominantTrait: z.string().optional(),
+  dailySecondaryTrait: z.string().optional(),
 });

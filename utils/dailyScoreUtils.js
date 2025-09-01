@@ -10,7 +10,16 @@ export function isStale(dailyScore, now = new Date()) {
 // Return a fresh daily score object
 // checking if the question is answered today.
 export function freshDailyScore(now = new Date()) {
-  return { date: now, D: 0, i: 0, S: 0, C: 0, answeredQuestions: [] };
+  return {
+    date: now,
+    D: 0,
+    i: 0,
+    S: 0,
+    C: 0,
+    answeredQuestions: [],
+    dailyDominantTrait: null,
+    dailySecondaryTrait: null,
+  };
 }
 
 export function toHistoryEntry(dailyScore) {
@@ -22,6 +31,8 @@ export function toHistoryEntry(dailyScore) {
     S: dailyScore.S,
     C: dailyScore.C,
     answeredQuestions: [...(dailyScore.answeredQuestions || [])],
+    dailyDominantTrait: dailyScore.dailyDominantTrait,
+    dailySecondaryTrait: dailyScore.dailySecondaryTrait,
   };
 }
 
