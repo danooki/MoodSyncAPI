@@ -91,15 +91,15 @@ Response:
   Response:
   - Success (201):
   {
-    "invite": {
-      "inviteId": "string",
-      "circleId": "string",
-      "fromUser": "string", 
-      "toUser": "string",
-      "status": "string (pending, accepted, declined)",
-      "expiresAt": "date"
-    }
+  "circle": "string", (mongoose id of the circle, cant change this name)
+  "fromUser": "string", (mongoose id of the user who is inviting)
+  "toUser": "string", (mongoose id of the user who receives the invite)
+  "status": "string (pending, accepted, declined)",
+  "_id": "string" (mongoose id of the invite, cant change this name)
+  "createdAt": "date",
+  "updatedAt": "date"
   }
+
 - Error (400):
   {
     "success": false,
@@ -124,7 +124,7 @@ Response:
   ===========================
   
   POST /circle/invite/:inviteId/accept to Accept an invitation
-  The inviteId must be in the url.
+  The inviteId (invite._id) must be in the url.
   Request Body: None
   Headers: Authorization: Bearer <token>
   
