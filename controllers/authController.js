@@ -1,6 +1,7 @@
 import User from "../models/UserModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { getMyCircle } from "../services/circleService.js";
 
 // SIGN IN
 const signIn = async (req, res) => {
@@ -32,6 +33,32 @@ const signIn = async (req, res) => {
   user = user.toObject(); // converts mongodb object to regular JS object.
   delete user.password; // delete password for the response.
 
+  // Get user's circle information
+  console.log("DEBUG authController signIn - user._id:", user._id);
+  console.log("DEBUG authController signIn - user._id type:", typeof user._id);
+  const circle = await getMyCircle(user._id);
+  console.log("DEBUG authController signIn - circle result:", circle);
+
+  // Restructure user object to match the format returned by /user/me endpoint
+  const userResponse = {
+    id: user._id,
+    displayName: user.displayName,
+    email: user.email,
+    avatar: user.avatar,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    // Include circle information if user belongs to one
+    circle: circle
+      ? {
+          id: circle._id,
+          name: circle.circleName,
+          isOwner: circle.owner.toString() === user._id.toString(),
+          memberCount: circle.members.length,
+          createdAt: circle.createdAt,
+        }
+      : null,
+  };
+
   res
     .cookie("token", token, {
       httpOnly: true,
@@ -39,7 +66,7 @@ const signIn = async (req, res) => {
       sameSite: isProduction ? "None" : "Lax",
       maxAge: 12 * 60 * 60 * 1000, // 12 hours
     })
-    .json(user);
+    .json(userResponse);
 };
 // not secure on development mode = because localhost doesnt have https.
 
@@ -58,7 +85,38 @@ const signUp = async (req, res) => {
     password: hashedPassword,
   }); // use the information from the body to create the user.
 
-  res.json(newUser);
+  // Convert to object and restructure to match the format returned by /user/me endpoint
+  const userObject = newUser.toObject();
+
+  // Get user's circle information (new users typically won't have one)
+  console.log("DEBUG authController signUp - userObject._id:", userObject._id);
+  console.log(
+    "DEBUG authController signUp - userObject._id type:",
+    typeof userObject._id
+  );
+  const circle = await getMyCircle(userObject._id);
+  console.log("DEBUG authController signUp - circle result:", circle);
+
+  const userResponse = {
+    id: userObject._id,
+    displayName: userObject.displayName,
+    email: userObject.email,
+    avatar: userObject.avatar,
+    createdAt: userObject.createdAt,
+    updatedAt: userObject.updatedAt,
+    // Include circle information if user belongs to one
+    circle: circle
+      ? {
+          id: circle._id,
+          name: circle.circleName,
+          isOwner: circle.owner.toString() === userObject._id.toString(),
+          memberCount: circle.members.length,
+          createdAt: circle.createdAt,
+        }
+      : null,
+  };
+
+  res.json(userResponse);
 };
 
 // SIGN OUT

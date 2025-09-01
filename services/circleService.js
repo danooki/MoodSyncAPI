@@ -174,7 +174,43 @@ export async function declineInvite(inviteId, actingUserId) {
 
 // Lists the circle where the user is a member (at least one).
 export async function getMyCircle(userId) {
-  return await Circle.findOne({ members: userId }).lean();
+  console.log("DEBUG getMyCircle - userId:", userId);
+  console.log("DEBUG getMyCircle - userId type:", typeof userId);
+
+  // Try different query approaches
+  const circle = await Circle.findOne({ members: userId }).lean();
+  console.log("DEBUG getMyCircle - circle found:", circle);
+
+  if (!circle) {
+    // Try alternative query with string conversion
+    const circleAlt = await Circle.findOne({
+      members: userId.toString(),
+    }).lean();
+    console.log("DEBUG getMyCircle - alternative query result:", circleAlt);
+
+    // Check if there are any circles at all
+    const allCircles = await Circle.find({}).lean();
+    console.log("DEBUG getMyCircle - all circles:", allCircles);
+
+    // Check if the user is in any circle with different query
+    const userInCircle = await Circle.findOne({
+      $or: [
+        { members: userId },
+        { members: userId.toString() },
+        { owner: userId },
+        { owner: userId.toString() },
+      ],
+    }).lean();
+    console.log("DEBUG getMyCircle - userInCircle result:", userInCircle);
+
+    // If we found a circle with alternative query, return it
+    if (userInCircle) {
+      console.log("DEBUG getMyCircle - returning userInCircle:", userInCircle);
+      return userInCircle;
+    }
+  }
+
+  return circle;
 }
 
 // Returns the circleId if the user is in a circle, otherwise null (for Frontend)

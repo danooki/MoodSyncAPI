@@ -49,3 +49,28 @@ export const signInSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
+
+// CHANGE PASSWORD schema
+export const changePasswordSchema = z.object({
+  currentPassword: z
+    .string()
+    .min(6, "Current password must be at least 6 characters"),
+  newPassword: z.string().min(6, "New password must be at least 6 characters"),
+});
+
+// UPDATE DISPLAY NAME schema
+export const updateDisplayNameSchema = z.object({
+  displayName: z.string().min(2, "Display name must be at least 2 characters"),
+});
+
+// UPDATE EMAIL schema
+export const updateEmailSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+// LEAVE CIRCLE schema (no body needed, just confirmation)
+export const leaveCircleSchema = z.object({
+  confirm: z
+    .boolean()
+    .refine((val) => val === true, "You must confirm leaving the circle"),
+});
