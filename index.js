@@ -16,7 +16,21 @@ import hardProposalRouter from "./routes/hardProposalRouter.js";
 const app = express();
 const port = process.env.PORT || 4321;
 
-app.use(cors({ origin: process.env.SPA_ORIGIN, credentials: true }));
+const allowedOrigins = process.env.SPA_ORIGIN.split(",");
+
+// cors to allow requests from both localhost and the deployed app
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser()); // above the endpoints
