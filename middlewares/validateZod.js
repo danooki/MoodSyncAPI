@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const validateZod = (zodSchema) => (req, res, next) => {
   console.log("Request body:", req.body);
@@ -7,7 +7,10 @@ const validateZod = (zodSchema) => (req, res, next) => {
   const { data, error } = zodSchema.safeParse(req.body);
   if (error) {
     console.log("Validation error:", error.errors);
-    next(new Error(z.prettifyError(error), { cause: 400 }));
+    const errorMessage = error.errors
+      .map((err) => `${err.path.join(".")}: ${err.message}`)
+      .join(", ");
+    next(new Error(errorMessage, { cause: 400 }));
   } else {
     req.sanitizedBody = data;
     next();
