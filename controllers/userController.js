@@ -52,7 +52,13 @@ const getMe = async (req, res) => {
     }
 
     // Get user's circle information
+    console.log("DEBUG userController getMe - req.userId:", req.userId);
+    console.log(
+      "DEBUG userController getMe - req.userId type:",
+      typeof req.userId
+    );
     const circle = await getMyCircle(req.userId);
+    console.log("DEBUG userController getMe - circle result:", circle);
 
     // Get detailed questions information
     const questionsInfo = getDetailedQuestionsInfo(user.dailyScore);

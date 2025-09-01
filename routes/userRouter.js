@@ -1,10 +1,49 @@
 import { Router } from "express";
 import { getMe } from "../controllers/userController.js";
+import {
+  changePassword,
+  updateDisplayName,
+  updateEmail,
+  uploadAvatar,
+  leaveCircle,
+} from "../controllers/userSettingsController.js";
 import verifyToken from "../middlewares/verifyToken.js";
+import validateZod from "../middlewares/validateZod.js";
+import {
+  uploadAvatar as uploadAvatarMiddleware,
+  handleUploadError,
+} from "../middlewares/uploadMiddleware.js";
+import {
+  changePasswordSchema,
+  updateDisplayNameSchema,
+  updateEmailSchema,
+  leaveCircleSchema,
+} from "../zod/userSchema.js";
 
 const userRouter = Router();
+userRouter.use(verifyToken);
 
-userRouter.get("/me", verifyToken, getMe);
+userRouter.get("/me", getMe);
+
+// User settings routes
+userRouter.put(
+  "/change-password",
+  validateZod(changePasswordSchema),
+  changePassword
+);
+userRouter.put(
+  "/update-displayname",
+  validateZod(updateDisplayNameSchema),
+  updateDisplayName
+);
+userRouter.put("/update-email", validateZod(updateEmailSchema), updateEmail);
+userRouter.post(
+  "/upload-avatar",
+  uploadAvatarMiddleware,
+  handleUploadError,
+  uploadAvatar
+);
+userRouter.post("/leave-circle", validateZod(leaveCircleSchema), leaveCircle);
 
 export default userRouter;
 
