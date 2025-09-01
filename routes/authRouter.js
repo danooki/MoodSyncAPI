@@ -24,16 +24,17 @@ Request Body (JSON):
 Response:
 - Success (200): 
   {
-    "success": true,
-    "message": "Sign in successful",
-    "data": {
-      "user": {
-        "id": "string",
-        "email": "string",
-        "name": "string"
-      },
-      "token": "string"
-    }
+      "displayName": "string",
+      "email": "string",
+      "avatar": "string",
+      "currentPartner": "string",
+      "preferences": {
+        "notifications": {
+          "dailyReminder": "boolean",
+          "partnerSubmittedAlert": "boolean"
+        },
+        "timezone": "string"
+      }
   }
 - Error (400/401): 
   {
@@ -48,20 +49,22 @@ Request Body (JSON):
 {
   "email": "string (required)",
   "password": "string (required, min 6 chars)",
-  "name": "string (required)"
+  "displayName": "string (required)"
 }
 
 Response:
 - Success (201): 
   {
-    "success": true,
-    "message": "User registered successfully",
-    "data": {
-      "user": {
-        "id": "string",
-        "email": "string",
-        "name": "string"
-      }
+    "displayName": "string",
+    "email": "string",
+    "avatar": "string",
+    "currentPartner": "string",
+    "preferences": {
+      "notifications": {
+        "dailyReminder": "boolean",
+        "partnerSubmittedAlert": "boolean"
+      },
+      "timezone": "string"
     }
   }
 
@@ -79,8 +82,7 @@ Headers: Authorization: Bearer <token>
 Response:
 - Success (200): 
   {
-    "success": true,
-    "message": "Sign out successful"
+    "message": "You just logged out from MoodSync. Goodbye!"
   }
 - Error (401): 
   {

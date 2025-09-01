@@ -74,12 +74,14 @@ Headers: Authorization: Bearer <token>
 Response:
 - Success (200): 
   {
-    "question": {
-      "id": "string",
-      "text": "string",
-      "type": "string",
-      "options": ["array of strings"]
-    }
+    "questionId": "string",
+    "text": "string",
+    "choices": [
+      {
+        "choiceId": "string",
+        "label": "string"
+      }
+    ]
   }
 
 - Error (401): 
@@ -107,17 +109,16 @@ Headers: Authorization: Bearer <token>
 Response:
 - Success (200): 
   {
-    "success": true,
-    "message": "Answer submitted successfully",
-    "data": {
-      "answer": {
-        "id": "string",
-        "questionId": "string",
-        "answer": "string",
-        "score": "number",
-        "createdAt": "date"
-      }
-    }
+    "dailyScore": {
+      "date": "date",
+      "D": "number",
+      "i": "number",
+      "S": "number",
+      "C": "number",
+      "answeredQuestions": ["string"],
+      "dailyDominantTrait": "string",
+      "dailySecondaryTrait": "string",
+    } 
   }
 
 - Error (400): 

@@ -27,28 +27,19 @@ Headers: Authorization: Bearer <token>
 Response:
 - Success (200): 
   {
-    "success": true,
-    "message": "Tracking board retrieved successfully",
-    "data": {
-      "trackingBoard": {
+    "trackingBoard": {
         "circleId": "string",
         "circleName": "string",
         "members": [
           {
-            "userId": "string",
-            "name": "string",
-            "profilePicture": "string (optional)",
-            "dailyScores": [
-              {
-                "date": "date",
-                "score": "number",
-                "mood": "string"
-              }
-            ]
+            "_id": "string",
+            "displayName": "string",
+            "avatar": "string (optional)",
+            "answeredCount": "number",
+            "status": "string",
           }
         ],
-        "totalMembers": "number",
-        "averageScore": "number"
+        "allCompleted": "boolean"
       }
     }
   }
