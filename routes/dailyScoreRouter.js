@@ -23,13 +23,13 @@ router.use(verifyToken);
 // GET current (auto-resets if > 12h)
 router.get("/", getDailyScore);
 
-// GET next question
+// GET /next-question to get next unanswered question
 router.get("/next-question", getNextQuestionHandler);
 
-// POST one answer
+// POST /answer to submit one answer
 router.post("/answer", validateZod(dailyAnswerSchema), postAnswer);
 
-// POST multiple answers
+// POST /batch to submit multiple answers
 router.post("/batch", validateZod(dailyBatchSchema), postBatch);
 
 // GET /daily-score/history for daily scores plural
@@ -46,15 +46,15 @@ Headers: Authorization: Bearer <token>
 Response:
 - Success (200): 
   {
-    "success": true,
-    "message": "Daily score retrieved successfully",
-    "data": {
       "dailyScore": {
-        "id": "string",
-        "score": "number",
-        "questionsAnswered": "number",
-        "createdAt": "date",
-        "updatedAt": "date"
+        "date": "date",
+        "D": "number",
+        "i": "number",
+        "S": "number",
+        "C": "number",
+        "answeredQuestions": ["string"],
+        "dailyDominantTrait": "string",
+        "dailySecondaryTrait": "string",
       }
     }
   }
@@ -74,16 +74,18 @@ Headers: Authorization: Bearer <token>
 Response:
 - Success (200): 
   {
-    "success": true,
-    "message": "Next question retrieved successfully",
-    "data": {
-      "question": {
-        "id": "string",
-        "text": "string",
-        "type": "string",
-        "options": ["array of strings"]
-      }
+    "question": {
+      "id": "string",
+      "text": "string",
+      "type": "string",
+      "options": ["array of strings"]
     }
+  }
+
+- Error (401): 
+  {
+    "success": false,
+    "message": "Unauthorized or invalid token"
   }
 
 - Error (401): 
@@ -138,7 +140,7 @@ Request Body (JSON):
   "answers": [
     {
       "questionId": "string (required)",
-      "answer": "string (required)"
+      "choiceId": "string (required)"
     }
   ]
 }
@@ -147,9 +149,7 @@ Headers: Authorization: Bearer <token>
 Response:
 - Success (200): 
   {
-    "success": true,
-    "message": "Batch answers submitted successfully",
-    "data": {
+    "dailyScore": {
       "answers": [
         {
           "id": "string",
@@ -184,16 +184,16 @@ Headers: Authorization: Bearer <token>
 Response:
 - Success (200): 
   {
-    "success": true,
-    "message": "Daily score history retrieved successfully",
-    "data": {
-      "history": [
+    "history": [
         {
-          "id": "string",
-          "score": "number",
-          "questionsAnswered": "number",
-          "createdAt": "date",
-          "updatedAt": "date"
+          "date": "date",
+          "D": "number",
+          "i": "number",
+          "S": "number",
+          "C": "number",
+          "answeredQuestions": ["string"],
+          "dailyDominantTrait": "string",
+          "dailySecondaryTrait": "string",
         }
       ]
     }

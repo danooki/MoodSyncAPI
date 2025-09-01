@@ -3,7 +3,6 @@
 import CircleModel from "../models/CircleModel.js";
 import UserModel from "../models/UserModel.js";
 import * as circleProgressService from "./circleProgressService.js";
-import { getPrimaryAndSecondary } from "../utils/dailyScoreUtils.js";
 
 const matchTexts = {
   goodMatch: {
@@ -73,8 +72,9 @@ const getMatchPreview = async (userId) => {
         };
       }
 
-      // Compute primary and secondary scores from raw DISC scores
-      const { primary, secondary } = getPrimaryAndSecondary(user.dailyScore);
+      // Use pre-computed daily traits (more efficient than recalculating)
+      const primary = user.dailyScore.dailyDominantTrait;
+      const secondary = user.dailyScore.dailySecondaryTrait;
 
       return {
         _id: user._id.toString(),
@@ -132,7 +132,7 @@ const getMatchPreview = async (userId) => {
     }
 
     if (member._id === userId) {
-      // Current user - check if they have any good matches
+      // Current user - check the type of match the circle has.
       const hasGoodMatch = circleMembers.some(
         (m) => m._id !== userId && m.primaryScore === currentPrimary
       );
@@ -147,7 +147,7 @@ const getMatchPreview = async (userId) => {
       return;
     }
 
-    // Other members - check if primary scores match with current user
+    // Other members - check if the type of match the circle has.
     if (member.primaryScore === currentPrimary) {
       // Good match → both get same interest text
       member.matchType = "goodMatch";
@@ -167,34 +167,3 @@ const getMatchPreview = async (userId) => {
 };
 
 export default { getMatchPreview };
-
-// ─────────────────────────────────────────────────────────────
-/* Backend will provide with:
-{
-  "allCompleted": true,
-  "circleMembers": [
-    {
-      "displayName": "Alice",
-      "avatar": "url_to_avatar",
-      "primaryScore": "D",
-      "secondaryScore": "i",
-      "attributes": ["Strong-Willed", "Firm", "Decisive"],
-      "matchType": "goodMatch",
-      "interestText": "You both love taking charge and leading with confidence!",
-      "lookingForText": ""
-    },
-    {
-      "displayName": "Bob",
-      "avatar": "url_to_avatar",
-      "primaryScore": "C",
-      "secondaryScore": "S",
-      "attributes": ["Analytical", "Precise", "Organized"],
-      "matchType": "negotiateMatch",
-      "interestText": "",
-      "lookingForText": "Looking for structure, accuracy, and well-planned activities."
-    }
-  ],
-  "isSinglePersonCircle": false
-}
-  */
-// ─────────────────────────────────────────────────────────────

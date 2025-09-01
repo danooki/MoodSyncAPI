@@ -29,7 +29,7 @@ export async function getNextQuestionHandler(req, res, next) {
     // query param: ?random=false to enforce sequential
     const random = req.query.random === "false" ? false : true;
 
-    const payload = await dailyScoreService.getNextQuestion(userId, { random });
+    const payload = await getNextQuestion(userId, { random });
     return res.json(payload);
   } catch (err) {
     return next(err);

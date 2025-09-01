@@ -20,16 +20,21 @@ Headers: Authorization: Bearer <token>
 Response:
 - Success (200): 
 {
-  "allCompleted": "boolean",
+  "allCompleted": boolean,
   "circleMembers": [
     {
-      "id": "string",
+      "_id": "string",
       "displayName": "string",
       "avatar": "string",
-      "dominant": "string"
+      "primaryScore": "string | null", // dailyDominantTrait - resets every 12 hours
+      "secondaryScore": "string | null", // dailySecondaryTrait - resets every 12 hours
+      "attributes": ["string"],
+      "matchType": "string",
+      "interestText": "string",
+      "lookingForText": "string"
     }
-  ]
-  "isSinglePersonCircle": "boolean",
+  ],
+  "isSinglePersonCircle": boolean
 }
 
 - Error (401): 
