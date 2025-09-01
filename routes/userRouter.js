@@ -17,18 +17,26 @@ Headers: Authorization: Bearer <token>
 Response:
 - Success (200): 
   {
-    "success": true,
-    "message": "User profile retrieved successfully",
-    "data": {
+    "message": "This is all the information about "user.displayName".",
       "user": {
-        "id": "string",
+        "_id": "string", (mongoose id of the user, cant change this name)
         "email": "string",
-        "name": "string",
-        "profilePicture": "string (optional)",
+        "displayName": "string",
+        "avatar": "string (optional)",
         "createdAt": "date",
         "updatedAt": "date"
-      }
-    }
+      },
+      "circle": {
+        "_id": "string", (mongoose id of the circle, cant change this name)
+        "circleName": "string",
+        "isOwner": "boolean",
+        "memberCount": "number",
+        "createdAt": "date"
+      },  
+      "dailyQuestions": {
+        "summary": "string",
+        "currentScore": "object",
+      },
   }
 
 - Error (401): 

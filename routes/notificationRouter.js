@@ -27,12 +27,9 @@ Headers: Authorization: Bearer <token>
 Response:
 - Success (200): 
   {
-    "success": true,
-    "message": "Unread notifications retrieved successfully",
-    "data": {
-      "notifications": [
+        "notifications": [
         {
-          "id": "string",
+          "_id": "string", (mongoose id of the notification, cant change this name)
           "type": "string (circle_invite, daily_score, match_proposal, etc.)",
           "title": "string",
           "message": "string",
@@ -71,16 +68,20 @@ Parameters: notificationId (string, required)
 Response:
 - Success (200): 
   {
-    "success": true,
     "message": "Notification marked as read successfully",
-    "data": {
       "notification": {
-        "id": "string",
+        "_id": "string", (mongoose id of the notification, cant change this name)
         "type": "string",
         "title": "string",
-        "message": "string",
-        "isRead": "boolean (true)",
-        "updatedAt": "date"
+            "answeredCount": "number",
+            "status": "string",
+          }
+        ],
+        "allCompleted": "boolean"
+      }
+    }
+              {
+                "date": "date",
       }
     }
   }
