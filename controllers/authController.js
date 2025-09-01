@@ -20,24 +20,22 @@ const signIn = async (req, res) => {
   const tokenOptions = { expiresIn: "7d" };
 
   const token = jwt.sign(payload, jwtSecret, tokenOptions);
-  console.log(token);
 
   const isProduction = process.env.NODE_ENV === "production";
+  const maxCookieAge = 7 * 24 * 60 * 60 * 1000; // 7 days
   const cookieOptions = {
     httpOnly: true, // JavaScript can't access this cookie
     secure: isProduction ? true : false,
     sameSite: isProduction ? "None" : "Lax", // sameSite can be Strict, Lax, or None.
     // Selecting "None" allows cross-origin requests (for separate frontend/backend domains)
+    maxAge: maxCookieAge,
   };
 
   user = user.toObject(); // converts mongodb object to regular JS object.
   delete user.password; // delete password for the response.
 
   // Get user's circle information
-  console.log("DEBUG authController signIn - user._id:", user._id);
-  console.log("DEBUG authController signIn - user._id type:", typeof user._id);
   const circle = await getMyCircle(user._id);
-  console.log("DEBUG authController signIn - circle result:", circle);
 
   // Restructure user object to match the format returned by /user/me endpoint
   const userResponse = {
@@ -59,14 +57,7 @@ const signIn = async (req, res) => {
       : null,
   };
 
-  res
-    .cookie("token", token, {
-      httpOnly: true,
-      secure: isProduction ? true : false,
-      sameSite: isProduction ? "None" : "Lax",
-      maxAge: 12 * 60 * 60 * 1000, // 12 hours
-    })
-    .json(userResponse);
+  res.cookie("token", token, cookieOptions).json(userResponse);
 };
 // not secure on development mode = because localhost doesnt have https.
 
@@ -89,13 +80,7 @@ const signUp = async (req, res) => {
   const userObject = newUser.toObject();
 
   // Get user's circle information (new users typically won't have one)
-  console.log("DEBUG authController signUp - userObject._id:", userObject._id);
-  console.log(
-    "DEBUG authController signUp - userObject._id type:",
-    typeof userObject._id
-  );
   const circle = await getMyCircle(userObject._id);
-  console.log("DEBUG authController signUp - circle result:", circle);
 
   const userResponse = {
     id: userObject._id,
