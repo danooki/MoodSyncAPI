@@ -167,7 +167,7 @@ export async function getCircleProposals(userId) {
     circle.members.map(async (member) => {
       const user = await User.findById(member._id);
       const dailyScore = await getDailyScore(user._id);
-      const dominant = dominantDim(dailyScore);
+      const dominant = dailyScore.dailyDominantTrait || dominantDim(dailyScore);
 
       return {
         id: user._id,

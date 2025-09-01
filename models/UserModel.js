@@ -5,14 +5,16 @@ const { Schema, model } = mongoose;
 // Schema for dailyScore subdocument
 const dailyScoreSchema = new Schema(
   {
-    date: { type: Date, required: true }, // use Date for easier comparisons
+    date: { type: Date, required: true },
     D: { type: Number, default: 0 },
     i: { type: Number, default: 0 },
     S: { type: Number, default: 0 },
     C: { type: Number, default: 0 },
-    answeredQuestions: [{ type: String }], // store questionIds to avoid double-counting
+    answeredQuestions: [{ type: String }],
+    dailyDominantTrait: { type: String, default: null },
+    dailySecondaryTrait: { type: String, default: null },
   },
-  { _id: false } // optional: don't need separate _id for embedded doc
+  { _id: false }
 );
 
 const userSchema = new Schema(
