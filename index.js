@@ -18,6 +18,7 @@ import dailyScoreRouter from "./routes/dailyScoreRouter.js";
 import trackingBoardRouter from "./routes/trackingBoardRouter.js";
 import getMatchPreview from "./routes/matchRouter.js";
 import hardProposalRouter from "./routes/hardProposalRouter.js";
+import adminRouter from "./routes/adminRouter.js";
 
 const app = express();
 const port = process.env.PORT || 4321;
@@ -48,6 +49,17 @@ app.use("/daily-score", dailyScoreRouter);
 app.use("/tracking-board", trackingBoardRouter);
 app.use("/match", getMatchPreview);
 app.use("/proposal", hardProposalRouter);
+
+// Hidden admin routes
+console.log(
+  "🔍 Environment variable value:",
+  process.env.HIDDEN_ADMIN_ENDPOINT
+);
+console.log(
+  "🔍 Environment variable type:",
+  typeof process.env.HIDDEN_ADMIN_ENDPOINT
+);
+app.use(process.env.HIDDEN_ADMIN_ENDPOINT, adminRouter);
 
 // errors + splat route must be after all endpoints
 app.use("*splat", (req, res) => res.status(404).json({ error: "Not found" })); // wrong or false routes
