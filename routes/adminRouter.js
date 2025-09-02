@@ -18,7 +18,6 @@ router.get("/", async (req, res, next) => {
         _id: user._id,
         displayName: user.displayName,
         email: user.email,
-        createdAt: user.createdAt,
       })),
     });
   } catch (err) {

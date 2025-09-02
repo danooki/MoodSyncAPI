@@ -7,6 +7,7 @@ import {
   selectNextUnansweredQuestion,
 } from "./dailyScoreCoreRoutines.js";
 import { getPrimaryAndSecondary } from "../../utils/dailyScoreUtils.js";
+import { QUESTION_BANK } from "../../data/dailyQuestionStatic.js";
 
 // Public API (called from controllers)
 export async function getDailyScore(userId) {
@@ -20,7 +21,13 @@ export async function getDailyScore(userId) {
   const { reset } = await ensureDailyScoreCurrent(user);
   if (reset) await user.save();
 
-  return user.dailyScore;
+  // Add total questions count to the response (always 4 for daily questions)
+  const dailyScoreWithTotal = {
+    ...user.dailyScore.toObject(),
+    totalQuestions: 4,
+  };
+
+  return dailyScoreWithTotal;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -58,7 +65,14 @@ export async function applyAnswer(userId, questionId, choiceId) {
   user.dailyScore.dailySecondaryTrait = secondary;
 
   await user.save();
-  return user.dailyScore;
+
+  // Add total questions count to the response (always 4 for daily questions)
+  const dailyScoreWithTotal = {
+    ...user.dailyScore.toObject(),
+    totalQuestions: 4,
+  };
+
+  return dailyScoreWithTotal;
 }
 
 // ─────────────────────────────────────────────────────────────

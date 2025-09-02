@@ -39,9 +39,11 @@ app.use(
   })
 );
 
+// Middleware
 app.use(express.json());
 app.use(cookieParser()); // above the endpoints
 
+// Routes
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/circle", circleRouter);
@@ -49,22 +51,13 @@ app.use("/daily-score", dailyScoreRouter);
 app.use("/tracking-board", trackingBoardRouter);
 app.use("/match", getMatchPreview);
 app.use("/proposal", hardProposalRouter);
-
-// Hidden admin routes
-console.log(
-  "🔍 Environment variable value:",
-  process.env.HIDDEN_ADMIN_ENDPOINT
-);
-console.log(
-  "🔍 Environment variable type:",
-  typeof process.env.HIDDEN_ADMIN_ENDPOINT
-);
 app.use(process.env.HIDDEN_ADMIN_ENDPOINT, adminRouter);
 
-// errors + splat route must be after all endpoints
-app.use("*splat", (req, res) => res.status(404).json({ error: "Not found" })); // wrong or false routes
+// Error handling and 404 route (after all endpoints)
+app.use("*splat", (req, res) => res.status(404).json({ error: "Not found" }));
 app.use(errorHandler);
 
+// Start server
 app.listen(port, () =>
   console.log(`Server listening on http://localhost:${port}`)
 );
