@@ -5,6 +5,12 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errorHandler.js";
 
+// Import models to register them with Mongoose
+import "./models/UserModel.js";
+import "./models/CircleModel.js";
+import "./models/CircleInviteModel.js";
+import "./models/NotificationModel.js";
+
 import authRouter from "./routes/authRouter.js";
 import userRouter from "./routes/userRouter.js";
 import circleRouter from "./routes/circleRouter.js";
