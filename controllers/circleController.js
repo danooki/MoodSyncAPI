@@ -26,6 +26,10 @@ export async function getMyCircleController(req, res, next) {
       isInCircle: !!circle,
       circleId: circle?._id || null,
       circleName: circle?.circleName || null,
+      owner: circle?.owner || null,
+      members: circle?.members || [],
+      createdAt: circle?.createdAt || null,
+      updatedAt: circle?.updatedAt || null,
     };
     res.json(response);
   } catch (err) {
