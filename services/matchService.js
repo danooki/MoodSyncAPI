@@ -1,4 +1,4 @@
-// goal: users see if their circle members are compatible based on daily DISC traits before any actual proposals.
+// purpose: show users and circle members status before any actual proposal.
 
 import CircleModel from "../models/CircleModel.js";
 import UserModel from "../models/UserModel.js";
@@ -33,6 +33,7 @@ const personalityAttributes = {
   C: ["Analytical", "Precise", "Organized"],
 };
 
+//this is the main function that calls all the other functions.
 const getMatchPreview = async (userId) => {
   // 1. fetch the user's circle
   const circle = await CircleModel.findOne({ members: userId }).populate(
