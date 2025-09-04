@@ -1,5 +1,6 @@
 import User from "../models/UserModel.js";
 import * as circleService from "./circleService.js";
+import { QUESTION_BANK } from "../data/dailyQuestionStatic.js";
 
 // ─────────────────────────────────────────────────────────────
 // Build a tracking board object for a circle.
@@ -36,6 +37,7 @@ async function buildTrackingBoard(circle) {
     circleName: circle.circleName,
     members: memberStatus,
     allCompleted,
+    totalQuestions: 4,
   };
 }
 
@@ -114,5 +116,6 @@ export async function getCircleResultForUser(userId) {
     circleName: circle.circleName,
     members: memberStatus,
     allCompleted,
+    totalQuestions: 4,
   };
 }

@@ -177,15 +177,21 @@ export async function getMyCircle(userId) {
   console.log("DEBUG getMyCircle - userId:", userId);
   console.log("DEBUG getMyCircle - userId type:", typeof userId);
 
-  // Try different query approaches
-  const circle = await Circle.findOne({ members: userId }).lean();
+  // Try different query approaches with population
+  const circle = await Circle.findOne({ members: userId })
+    .populate("owner", "displayName avatar")
+    .populate("members", "displayName avatar")
+    .lean();
   console.log("DEBUG getMyCircle - circle found:", circle);
 
   if (!circle) {
     // Try alternative query with string conversion
     const circleAlt = await Circle.findOne({
       members: userId.toString(),
-    }).lean();
+    })
+      .populate("owner", "displayName avatar")
+      .populate("members", "displayName avatar")
+      .lean();
     console.log("DEBUG getMyCircle - alternative query result:", circleAlt);
 
     // Check if there are any circles at all
@@ -200,7 +206,10 @@ export async function getMyCircle(userId) {
         { owner: userId },
         { owner: userId.toString() },
       ],
-    }).lean();
+    })
+      .populate("owner", "displayName avatar")
+      .populate("members", "displayName avatar")
+      .lean();
     console.log("DEBUG getMyCircle - userInCircle result:", userInCircle);
 
     // If we found a circle with alternative query, return it

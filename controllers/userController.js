@@ -1,10 +1,10 @@
 import User from "../models/UserModel.js";
 import { getMyCircle } from "../services/circleService.js";
-import { questions } from "../config/dailyQuestions.js";
+import { QUESTION_BANK } from "../data/dailyQuestionStatic.js";
 
 // Helper function to check if all questions are answered
 const checkAllQuestionsAnswered = (answeredQuestions) => {
-  const totalQuestions = Object.keys(questions).length;
+  const totalQuestions = 4; // Always 4 questions per day
   const answeredCount = answeredQuestions?.length || 0;
   return {
     allAnswered: answeredCount >= totalQuestions,
@@ -20,18 +20,17 @@ const getDetailedQuestionsInfo = (userDailyScore) => {
   const questionsStatus = checkAllQuestionsAnswered(answeredQuestions);
 
   // Get detailed info about each question
-  const questionsDetail = Object.keys(questions).map((questionId) => {
-    const question = questions[questionId];
-    const isAnswered = answeredQuestions.includes(questionId);
+  const questionsDetail = QUESTION_BANK.map((question) => {
+    const isAnswered = answeredQuestions.includes(question.id);
 
     return {
-      id: questionId,
+      id: question.id,
       text: question.text,
       isAnswered,
-      choices: Object.keys(question.choices).map((choiceId) => ({
+      choices: Object.keys(question.options).map((choiceId) => ({
         id: choiceId,
-        text: question.choices[choiceId].text,
-        points: question.choices[choiceId].points,
+        text: question.options[choiceId].label,
+        points: question.options[choiceId].weights,
       })),
     };
   });
