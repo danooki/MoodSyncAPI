@@ -50,7 +50,7 @@ app.use("/circle", circleRouter);
 app.use("/daily-score", dailyScoreRouter);
 app.use("/tracking-board", trackingBoardRouter);
 app.use("/match", getMatchPreview);
-app.use("/proposal", hardProposalRouter);
+app.use("/hard-proposals", hardProposalRouter);
 app.use(process.env.HIDDEN_ADMIN_ENDPOINT, adminRouter);
 
 // Error handling and 404 route (after all endpoints)
