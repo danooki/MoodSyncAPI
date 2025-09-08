@@ -110,7 +110,7 @@ const signOut = async (req, res) => {
   const cookieOptions = {
     httpOnly: true,
     secure: isProduction ? true : false,
-    sameSite: isProduction ? "None" : "Lax", // sameSite can be Strict, Lax, or None.
+    sameSite: "None", // before was isProduction ? "None" : "Lax".
   };
 
   res.clearCookie("token", cookieOptions);
