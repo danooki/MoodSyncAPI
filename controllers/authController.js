@@ -25,9 +25,9 @@ const signIn = async (req, res) => {
   const maxCookieAge = 7 * 24 * 60 * 60 * 1000; // 7 days
   const cookieOptions = {
     httpOnly: true, // JavaScript can't access this cookie
-    secure: isProduction ? true : false,
-    sameSite: isProduction ? "None" : "Lax", // sameSite can be Strict, Lax, or None.
+    sameSite: "Lax", // before => sameSite : isProduction ? "None" : "Lax",
     // Selecting "None" allows cross-origin requests (for separate frontend/backend domains)
+    secure: false,
     maxAge: maxCookieAge,
   };
 
