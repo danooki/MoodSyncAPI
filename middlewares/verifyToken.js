@@ -2,9 +2,14 @@ import jwt from "jsonwebtoken"; // need this to verify the token.
 
 const verifyToken = (req, res, next) => {
   try {
-    // 1. Get token from cookies
-    // cookie parser middleware must be used before this middleware.
-    const token = req.cookies?.token;
+    // 1. Get token from Authorization header
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1]; // Extract token from "Bearer TOKEN"
 
     if (!token) {
       return res.status(401).json({ error: "No token provided" });

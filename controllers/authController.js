@@ -91,15 +91,8 @@ const signUp = async (req, res) => {
 
 // SIGN OUT
 const signOut = async (req, res) => {
-  const isProd = process.env.NODE_ENV === "production";
-  const cookieOptions = {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: "lax",
-    path: "/",
-  };
-
-  res.clearCookie("token", cookieOptions);
+  // Since we're using localStorage, the frontend will handle token removal
+  // Just return success message
   res
     .status(200)
     .json({ message: "You just logged out from MoodSync. Goodbye!" });
