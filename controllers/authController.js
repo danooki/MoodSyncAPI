@@ -95,7 +95,7 @@ const signOut = async (req, res) => {
   const cookieOptions = {
     httpOnly: true,
     secure: isProd,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    sameSite: "lax",
     path: "/",
   };
 
