@@ -12,7 +12,7 @@ export const createSendToken = function (user, statusCode, res) {
   res.cookie("token", token, {
     httpOnly: true,
     secure: isProd,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    sameSite: "lax", // Changed from "none" to "lax" for better mobile compatibility
     path: "/",
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   });
