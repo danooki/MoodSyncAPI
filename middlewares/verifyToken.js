@@ -15,11 +15,11 @@ const verifyToken = (req, res, next) => {
 
     // DEBUG: Log the decoded token
     console.log("DEBUG JWT - decoded:", decoded);
-    console.log("DEBUG JWT - decoded.id:", decoded.id);
-    console.log("DEBUG JWT - decoded.id type:", typeof decoded.id);
+    console.log("DEBUG JWT - decoded.userId:", decoded.userId);
+    console.log("DEBUG JWT - decoded.userId type:", typeof decoded.userId);
 
     // 3. Attach userId to request
-    req.userId = decoded.id;
+    req.userId = decoded.userId;
     next();
   } catch (err) {
     res.status(401).json({ error: "Invalid or expired token" });

@@ -6,7 +6,7 @@ const signToken = (userId) =>
   });
 
 export const createSendToken = function (user, statusCode, res) {
-  const token = signToken(user._id);
+  const token = signToken(user.id);
 
   const isProd = process.env.NODE_ENV === "production";
   res.cookie("token", token, {
