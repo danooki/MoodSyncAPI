@@ -1,7 +1,8 @@
 import User from "../models/UserModel.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { getMyCircle } from "../services/circleService.js";
+import { createSendToken } from "../utils/createSendToken.js";
+import { StatusCodes } from "http-status-codes";
 
 // SIGN IN
 const signIn = async (req, res) => {
@@ -14,22 +15,6 @@ const signIn = async (req, res) => {
   // 2. Compare password
   const isMatch = await bcrypt.compare(password, user.password); // will compare the storage password.
   if (!isMatch) throw new Error("Invalid Credentials", { cause: 400 });
-
-  const payload = { id: user._id, displayName: user.displayName }; // Creates JWT with user info (id, name)
-  const jwtSecret = process.env.JWT_SECRET;
-  const tokenOptions = { expiresIn: "7d" };
-
-  const token = jwt.sign(payload, jwtSecret, tokenOptions);
-
-  const isProduction = process.env.NODE_ENV === "production";
-  const maxCookieAge = 7 * 24 * 60 * 60 * 1000; // 7 days
-  const cookieOptions = {
-    httpOnly: true, // JavaScript can't access this cookie
-    sameSite: "Lax", // before => sameSite : isProduction ? "None" : "Lax",
-    // Selecting "None" allows cross-origin requests (for separate frontend/backend domains)
-    secure: false,
-    maxAge: maxCookieAge,
-  };
 
   user = user.toObject(); // converts mongodb object to regular JS object.
   delete user.password; // delete password for the response.
@@ -57,7 +42,7 @@ const signIn = async (req, res) => {
       : null,
   };
 
-  res.cookie("token", token, cookieOptions).json(userResponse);
+  createSendToken(userResponse, StatusCodes.OK, res);
 };
 // not secure on development mode = because localhost doesnt have https.
 
@@ -101,16 +86,17 @@ const signUp = async (req, res) => {
       : null,
   };
 
-  res.json(userResponse);
+  createSendToken(userResponse, StatusCodes.CREATED, res);
 };
 
 // SIGN OUT
 const signOut = async (req, res) => {
-  const isProduction = process.env.NODE_ENV === "production";
+  const isProd = process.env.NODE_ENV === "production";
   const cookieOptions = {
     httpOnly: true,
-    secure: isProduction ? true : false,
-    sameSite: "None", // before was isProduction ? "None" : "Lax".
+    secure: isProd,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    path: "/",
   };
 
   res.clearCookie("token", cookieOptions);
