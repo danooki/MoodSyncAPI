@@ -1,12 +1,15 @@
 # MoodSync Partner Alignment Helper
 
+A partner alignment helper API that enables couples to understand each other better through daily questions, mood tracking, and compatibility analysis.
+Works together with the Frontend in https://github.com/danooki/MoodSyncFrontEnd
+
 ## Setup
 
 - `npm i` to install dependencies.
-- create a `.env` file with variables:
+- Create a `.env` file with variables:
 - `MONGO_URI=` for the collection.
 - `JWT_SECRET=` for the cookies.
-- `SPA_ORIGIN=` for CORS (frontend URL).
+- `SPA_ORIGIN=` for CORS configuration (frontend URL).
 
 ### Environment Variables Examples:
 
@@ -92,20 +95,23 @@ GET /tracking-board/:circleId Tracking board for a specific circle (member case)
 GET /match/preview overview of the circle's details before moving to Proposal.
 ```
 
-# Still in production:
-
-### Score after sign in.
+## Score after sign in.
 
 ```bash
 GET /daily-score see current score of user.
 ```
 
-- Shows each partner values to understand each user.
-- Comparison of values between users inside a circle.
-
-### Hard Proposal Screen
+## Hard Proposal Screen
 
 - Text of proposals based on the result from Match.
+
+## Secret Admin endpoints
+
+```bash
+GET /admin/??? to see users that do not belong to a circle.
+```
+
+# Still in production (September 2025):
 
 ### Proposal from AI
 
