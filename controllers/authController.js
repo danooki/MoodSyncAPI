@@ -44,7 +44,6 @@ const signIn = async (req, res) => {
 
   createSendToken(userResponse, StatusCodes.OK, res);
 };
-// not secure on development mode = because localhost doesnt have https.
 
 // SIGN UP
 const signUp = async (req, res) => {
