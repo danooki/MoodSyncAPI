@@ -2,15 +2,20 @@ import jwt from "jsonwebtoken"; // need this to verify the token.
 
 const verifyToken = (req, res, next) => {
   try {
-    // 1. Get token from Authorization header
-    const authHeader = req.headers.authorization;
+    let token;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ error: "No token provided" });
+    // 1. Try to get token from Authorization header first (for Postman/testing)
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
     }
 
-    const token = authHeader.split(" ")[1]; // Extract token from "Bearer TOKEN"
+    // 2. If no header token, try to get from cookies (for browser)
+    if (!token && req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    }
 
+    // 3. If still no token, return error
     if (!token) {
       return res.status(401).json({ error: "No token provided" });
     }
