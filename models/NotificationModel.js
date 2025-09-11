@@ -27,5 +27,8 @@ const NotificationSchema = new Schema(
 // Optional: index for unread notifications
 NotificationSchema.index({ user: 1, readAt: 1 });
 
+// TTL index: automatically delete notifications after 7 days
+NotificationSchema.index({ createdAt: 1 }, { expireAfterSeconds: 604800 });
+
 const Notification = mongoose.model("Notification", NotificationSchema);
 export default Notification;
