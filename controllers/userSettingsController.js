@@ -189,22 +189,7 @@ const leaveCircle = async (req, res) => {
       (member) => member.toString() !== userId.toString()
     );
 
-    // If user is the owner, transfer ownership to next member
-    if (circle.owner.toString() === userId.toString()) {
-      if (circle.members.length > 0) {
-        // Transfer ownership to the first remaining member
-        circle.owner = circle.members[0];
-      } else {
-        // No members left, circle will be deleted
-        await Circle.findByIdAndDelete(circle._id);
-        return res.json({
-          message:
-            "You have left the circle. The circle has been deleted as it is now empty.",
-        });
-      }
-    }
-
-    // Save circle (or it gets deleted if empty)
+    // Save circle (or delete if empty)
     if (circle.members.length > 0) {
       await circle.save();
       res.json({
