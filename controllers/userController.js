@@ -81,7 +81,6 @@ const getMe = async (req, res) => {
         ? {
             id: circle._id,
             name: circle.circleName,
-            isOwner: circle.owner.toString() === req.userId.toString(),
             memberCount: circle.members.length,
             createdAt: circle.createdAt,
           }
