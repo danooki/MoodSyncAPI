@@ -8,12 +8,6 @@ const CircleSchema = new Schema(
       required: true,
       trim: true,
     },
-    owner: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      // removed "unique: true" from Model because creates an issue.
-    },
     members: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -24,14 +18,6 @@ const CircleSchema = new Schema(
   },
   { timestamps: true }
 );
-
-// Ensure owner is always in members
-CircleSchema.pre("save", function (next) {
-  if (this.owner && !this.members.some((m) => m.equals(this.owner))) {
-    this.members.push(this.owner);
-  }
-  next();
-});
 
 // Prevent users from belonging to multiple circles
 CircleSchema.pre("save", async function (next) {

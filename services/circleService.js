@@ -7,18 +7,16 @@ import Notification from "../models/NotificationModel.js";
 import User from "../models/UserModel.js";
 import mongoose from "mongoose";
 
-// Creates a new circle owned by the given user.
-// The owner is automatically added as a member.
-export async function createCircle(ownerId, circleName) {
+// Creates a new circle with the given user as a member.
+export async function createCircle(creatorId, circleName) {
   return await Circle.create({
     circleName,
-    owner: ownerId,
-    members: [ownerId],
+    members: [creatorId],
   });
 }
 
-// checks if a circle exists and if the user is the owner.
-async function assertOwner(circleId, userId) {
+// checks if a circle exists and if the user is a member.
+async function assertMember(circleId, userId) {
   const circle = await Circle.findById(circleId);
   if (!circle) {
     const err = new Error("Circle not found");
@@ -26,27 +24,9 @@ async function assertOwner(circleId, userId) {
     throw err;
   }
 
-  /* TO CHECK IF WORKS -----------------------------------   
-console.log("DEBUG assertOwner - circle found:", {
-    _id: circle._id,
-    circleName: circle.circleName,
-    owner: circle.owner,
-    ownerType: typeof circle.owner,
-    ownerString: circle.owner.toString(),
-  });
-
-  console.log("DEBUG assertOwner - userId:", userId);
-  console.log("DEBUG assertOwner - userId type:", typeof userId);
-  console.log("DEBUG assertOwner - userId string:", userId.toString());
-
-  console.log(
-    "DEBUG assertOwner - comparison:",
-    circle.owner.toString() === userId.toString()
-  ); -------------------------------------------------*/
-
-  // More robust comparison
-  if (circle.owner.toString() !== userId.toString()) {
-    const err = new Error("Only the owner can perform this action");
+  // Check if user is a member of the circle
+  if (!circle.members.some((m) => m.toString() === userId.toString())) {
+    const err = new Error("Only circle members can perform this action");
     err.status = 403;
     throw err;
   }
@@ -55,8 +35,8 @@ console.log("DEBUG assertOwner - circle found:", {
 
 // sends an invitation to another user (found by displayName) to join the circle.
 export async function inviteByDisplayName(circleId, fromUserId, displayName) {
-  // The acting user is the circle owner
-  const circle = await assertOwner(circleId, fromUserId);
+  // The acting user must be a circle member
+  const circle = await assertMember(circleId, fromUserId);
 
   // Find the user to invite
   const toUser = await User.findOne({ displayName });
@@ -180,7 +160,6 @@ export async function getMyCircle(userId) {
 
   // Try different query approaches with population
   const circle = await Circle.findOne({ members: userId })
-    .populate("owner", "displayName avatar")
     .populate("members", "displayName avatar")
     .lean();
   console.log("DEBUG getMyCircle - circle found:", circle);
@@ -190,7 +169,6 @@ export async function getMyCircle(userId) {
     const circleAlt = await Circle.findOne({
       members: userId.toString(),
     })
-      .populate("owner", "displayName avatar")
       .populate("members", "displayName avatar")
       .lean();
     console.log("DEBUG getMyCircle - alternative query result:", circleAlt);
@@ -201,14 +179,8 @@ export async function getMyCircle(userId) {
 
     // Check if the user is in any circle with different query
     const userInCircle = await Circle.findOne({
-      $or: [
-        { members: userId },
-        { members: userId.toString() },
-        { owner: userId },
-        { owner: userId.toString() },
-      ],
+      $or: [{ members: userId }, { members: userId.toString() }],
     })
-      .populate("owner", "displayName avatar")
       .populate("members", "displayName avatar")
       .lean();
     console.log("DEBUG getMyCircle - userInCircle result:", userInCircle);
