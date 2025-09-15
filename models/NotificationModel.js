@@ -20,6 +20,11 @@ const NotificationSchema = new Schema(
     readAt: {
       type: Date,
     },
+    expiresAt: {
+      type: Date,
+      default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days default
+      index: { expireAfterSeconds: 0 }, // MongoDB TTL index
+    },
   },
   { timestamps: true }
 );

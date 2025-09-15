@@ -97,6 +97,7 @@ export async function inviteByDisplayName(circleId, fromUserId, displayName) {
   await Notification.create({
     user: toUser._id,
     type: "CIRCLE_INVITE",
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days for invites
     data: {
       inviteId: invite._id,
       circleId: circle._id,
