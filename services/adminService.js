@@ -57,3 +57,61 @@ export async function getEmptyCircles() {
     throw new Error("Failed to retrieve empty circles");
   }
 }
+
+// ────────────────────────────────────────────────────────────
+// Hidden admin function to find circles with invalid/deleted users
+// ────────────────────────────────────────────────────────────
+
+export async function getCirclesWithInvalidUsers() {
+  try {
+    // Get all circles with their members
+    const allCircles = await Circle.find({})
+      .select("_id circleName owner members createdAt")
+      .lean();
+
+    // Get all valid user IDs
+    const validUserIds = await User.find({}).select("_id").lean();
+    const validUserIdSet = new Set(
+      validUserIds.map((user) => user._id.toString())
+    );
+
+    // Find circles with invalid users
+    const circlesWithInvalidUsers = [];
+
+    for (const circle of allCircles) {
+      const invalidMembers = [];
+      let hasInvalidOwner = false;
+
+      // Check if owner is valid
+      if (!validUserIdSet.has(circle.owner.toString())) {
+        hasInvalidOwner = true;
+      }
+
+      // Check each member
+      for (const memberId of circle.members) {
+        if (!validUserIdSet.has(memberId.toString())) {
+          invalidMembers.push(memberId.toString());
+        }
+      }
+
+      // If circle has invalid users, add it to results
+      if (hasInvalidOwner || invalidMembers.length > 0) {
+        circlesWithInvalidUsers.push({
+          _id: circle._id,
+          circleName: circle.circleName,
+          owner: circle.owner,
+          hasInvalidOwner,
+          invalidMembers,
+          totalMembers: circle.members.length,
+          validMembers: circle.members.length - invalidMembers.length,
+          createdAt: circle.createdAt,
+        });
+      }
+    }
+
+    return circlesWithInvalidUsers;
+  } catch (error) {
+    console.error("Error in getCirclesWithInvalidUsers:", error);
+    throw new Error("Failed to retrieve circles with invalid users");
+  }
+}

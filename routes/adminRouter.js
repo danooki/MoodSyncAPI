@@ -3,6 +3,7 @@ import verifyToken from "../middlewares/verifyToken.js";
 import {
   getUsersWithoutCircle,
   getEmptyCircles,
+  getCirclesWithInvalidUsers,
 } from "../services/adminService.js";
 import { getAllFeedback } from "../controllers/feedbackController.js";
 
@@ -44,6 +45,20 @@ router.get("/users/empty-circles", async (req, res, next) => {
         memberCount: circle.members ? circle.members.length : 0,
         createdAt: circle.createdAt,
       })),
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Get circles with invalid/deleted users
+router.get("/circles/invalid-users", async (req, res, next) => {
+  try {
+    const circles = await getCirclesWithInvalidUsers();
+    res.json({
+      success: true,
+      count: circles.length,
+      circles: circles,
     });
   } catch (err) {
     next(err);
