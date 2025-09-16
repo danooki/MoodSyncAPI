@@ -23,6 +23,7 @@ const signIn = async (req, res) => {
   const circle = await getMyCircle(user._id);
 
   // Restructure user object to match the format returned by /user/me endpoint
+  // This is required because the frontend expects the response to be in a specific format and can't handle the mongoDB object.
   const userResponse = {
     id: user._id,
     displayName: user.displayName,
@@ -64,6 +65,8 @@ const signUp = async (req, res) => {
   const userObject = newUser.toObject();
 
   // Get user's circle information (new users typically won't have one)
+  // This is required because the frontend expects the response in a specific format and cant handle the mongoDB object.
+
   const circle = await getMyCircle(userObject._id);
 
   const userResponse = {

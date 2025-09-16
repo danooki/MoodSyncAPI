@@ -160,7 +160,7 @@ export async function getMyCircle(userId) {
 
   // Try different query approaches with population
   const circle = await Circle.findOne({ members: userId })
-    .populate("members", "displayName avatar")
+    .populate("members", "displayName avatar dailyScore")
     .lean();
   console.log("DEBUG getMyCircle - circle found:", circle);
 
@@ -169,7 +169,7 @@ export async function getMyCircle(userId) {
     const circleAlt = await Circle.findOne({
       members: userId.toString(),
     })
-      .populate("members", "displayName avatar")
+      .populate("members", "displayName avatar dailyScore")
       .lean();
     console.log("DEBUG getMyCircle - alternative query result:", circleAlt);
 
@@ -181,7 +181,7 @@ export async function getMyCircle(userId) {
     const userInCircle = await Circle.findOne({
       $or: [{ members: userId }, { members: userId.toString() }],
     })
-      .populate("members", "displayName avatar")
+      .populate("members", "displayName avatar dailyScore")
       .lean();
     console.log("DEBUG getMyCircle - userInCircle result:", userInCircle);
 

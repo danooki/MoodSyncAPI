@@ -10,6 +10,7 @@ import "./models/UserModel.js";
 import "./models/CircleModel.js";
 import "./models/CircleInviteModel.js";
 import "./models/NotificationModel.js";
+import "./models/FeedbackModel.js";
 
 import authRouter from "./routes/authRouter.js";
 import userRouter from "./routes/userRouter.js";
@@ -19,6 +20,7 @@ import trackingBoardRouter from "./routes/trackingBoardRouter.js";
 import getMatchPreview from "./routes/matchRouter.js";
 import hardProposalRouter from "./routes/hardProposalRouter.js";
 import adminRouter from "./routes/adminRouter.js";
+import feedbackRouter from "./routes/feedbackRouter.js";
 
 const app = express();
 const port = process.env.PORT || 4321;
@@ -51,7 +53,8 @@ app.use("/daily-score", dailyScoreRouter);
 app.use("/tracking-board", trackingBoardRouter);
 app.use("/match", getMatchPreview);
 app.use("/hard-proposals", hardProposalRouter);
-app.use(process.env.HIDDEN_ADMIN_ENDPOINT, adminRouter);
+app.use("/feedback", feedbackRouter);
+app.use(process.env.HIDDEN_ADMIN_ENDPOINT, adminRouter); // hidden in env file.
 
 // Error handling and 404 route (after all endpoints)
 app.use("*splat", (req, res) => res.status(404).json({ error: "Not found" }));

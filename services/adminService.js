@@ -38,3 +38,22 @@ export async function getUsersWithoutCircle() {
     throw new Error("Failed to retrieve users without circles");
   }
 }
+
+// ────────────────────────────────────────────────────────────
+// Admin function to find circles with no members
+// ────────────────────────────────────────────────────────────
+
+export async function getEmptyCircles() {
+  try {
+    const emptyCircles = await Circle.find({
+      $or: [{ members: { $exists: false } }, { members: { $size: 0 } }],
+    })
+      .select("_id circleName members createdAt")
+      .lean();
+
+    return emptyCircles;
+  } catch (error) {
+    console.error("Error in getEmptyCircles:", error);
+    throw new Error("Failed to retrieve empty circles");
+  }
+}
